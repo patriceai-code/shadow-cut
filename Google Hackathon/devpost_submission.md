@@ -68,7 +68,7 @@ Shadow Cut uses a **three-tier agentic cascade**:
 - Checks for things YOLO missed (semantic states, emotional tone)
 - Transcribes audio (director notes, dialogue)
 
-**Tier 3: Gemini Pro** (API, Rare Escalation, ~$0.05-0.20/call)
+**Tier 3: Gemini 3.1 Pro Preview** (API, Rare Escalation, ~$0.05-0.20/call)
 - Deep reasoning on complex, ambiguous cases
 - Cross-scene continuity ("Does Scene 5's performance match Scene 2's setup?")
 - Called only when Flash-Lite confidence < 70% AND prop is CRITICAL
@@ -79,7 +79,7 @@ Shadow Cut uses a **three-tier agentic cascade**:
 
 ### Tech Stack
 
-- **Google Cloud:** Gemini 2.5 Pro, Gemini 3.5 Flash-Lite, Gemini 3.6 Flash, Cloud Run, Firestore, Cloud Storage
+- **Google Cloud:** Gemini 3.1 Pro Preview, Gemini 3.5 Flash-Lite, Gemini 3.6 Flash, Cloud Run, Firestore, Cloud Storage
 - **IBM:** Bob (MCP server builder), watsonx Orchestrate
 - **Confluent:** Kafka event streaming
 - **Open Source:** YOLO-World, Python, FastAPI, Next.js
@@ -150,7 +150,7 @@ Shadow Cut uses a **three-tier agentic cascade**:
 
 ## BUILT WITH
 
-- Google Cloud Gemini (2.5 Pro, 3.5 Flash-Lite, 3.6 Flash)
+- Google Cloud Gemini (Gemini 3.1 Pro Preview, Gemini 2.5 Flash Lite)
 - Google Cloud Platform (Cloud Run, Firestore, Cloud Storage)
 - IBM Bob (MCP server builder)
 - IBM watsonx Orchestrate
@@ -163,11 +163,11 @@ Shadow Cut uses a **three-tier agentic cascade**:
 
 ## LINKS
 
-- **GitHub:** github.com/yourname/shadow-cut
-- **Live Demo:** shadow-cut-demo.web.app
-- **Demo Video:** youtube.com/watch?v=...
+- **GitHub Repository:** https://github.com/patriceai-code/shadow-cut
+- **Cloud Run Live API:** https://shadow-cut-api-713353926846.us-central1.run.app
+- **API Documentation & Health:** https://shadow-cut-api-713353926846.us-central1.run.app/health
+- **Demo Video:** [YouTube / Loom Link]
 
 ---
 
 *Submission ready. Copy-paste each section into the corresponding Devpost field.*
-*Last updated: August 3, 2026*

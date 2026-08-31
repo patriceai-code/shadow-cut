@@ -10,7 +10,7 @@ from pathlib import Path
 class PlotGraphBuilder:
     def __init__(self, api_key: str):
         self.client = genai.Client(api_key=api_key)
-        self.model = "gemini-2.5-pro"
+        self.model = "gemini-3.1-pro-preview"
 
     def parse_script(self, script_text: str, production_title: str = "Untitled") -> dict:
         """Parse script into Plot Knowledge Graph."""

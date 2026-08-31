@@ -1,0 +1,776 @@
+# =============================================================================
+# Shadow Cut — watsonx Orchestrate MCP Tool Deployment Spec
+# Version: 1.0.0
+# Compatible with: IBM watsonx Orchestrate 2.x / OpenAPI 3.0
+# =============================================================================
+#
+# This YAML describes all 6 Shadow Cut MCP tools for deployment as watsonx
+# Orchestrate custom skills. Each tool entry maps directly to the corresponding
+# @tool-decorated function in shadow_cut/mcp_servers/.
+#
+# DEPLOYMENT STEPS:
+#   1. Set environment variables (see `environment` blocks below).
+#   2. Build container: docker build -t shadow-cut-mcp .
+#   3. Push to IBM Container Registry or GCR.
+#   4. Register each skill in watsonx Orchestrate UI or via CLI:
+#      wx skills import --spec shadow_cut_orchestrate.yaml
+# =============================================================================
+
+openapi: "3.0.3"
+
+info:
+  title: Shadow Cut MCP Tools
+  version: "1.0.0"
+  description: |
+    Six MCP tools powering the Shadow Cut AI script supervisor.
+    All inputs and outputs are strict Pydantic v2 models — no Dict[str, Any].
+
+servers:
+  - url: "${SHADOW_CUT_MCP_BASE_URL}"
+    description: Shadow Cut MCP server (deployed container)
+
+# ---------------------------------------------------------------------------
+# Security
+# ---------------------------------------------------------------------------
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Shadow-Cut-API-Key
+
+  # ------------------------------------------------------------------
+  # Reusable schemas (mirrors shadow_cut/models/schemas.py)
+  # ------------------------------------------------------------------
+  schemas:
+
+    # ── Enumerations ────────────────────────────────────────────────
+
+    PlotWeight:
+      type: string
+      enum: [CRITICAL, IMPORTANT, INCIDENTAL]
+      description: Script-derived importance gate. Used as a decision GATE, never a multiplier.
+
+    AlertAction:
+      type: string
+      enum: [ALERT, SILENT_LOG, SUPPRESS, ESCALATE]
+
+    # ── parse_script schemas ─────────────────────────────────────────
+
+    PropRule:
+      type: object
+      required: [rule]
+      additionalProperties: false
+      properties:
+        rule:
+          type: string
+          minLength: 5
+          maxLength: 500
+
+    PropDefinition:
+      type: object
+      required: [canonical_name, description, plot_weight, first_appears_scene]
+      additionalProperties: false
+      properties:
+        canonical_name: { type: string, minLength: 1, maxLength: 100 }
+        description: { type: string, minLength: 1, maxLength: 1000 }
+        plot_weight: { $ref: "#/components/schemas/PlotWeight" }
+        first_appears_scene: { type: integer, minimum: 1 }
+        last_appears_scene: { type: integer, minimum: 1, nullable: true }
+        payoff_scene: { type: integer, minimum: 1, nullable: true }
+        setup_scene: { type: integer, minimum: 1, nullable: true }
+        is_character_signature: { type: boolean, default: false }
+        is_macguffin: { type: boolean, default: false }
+        state_vocabulary: { type: array, items: { type: string } }
+        default_state: { type: string, default: "unknown", maxLength: 100 }
+        continuity_rules: { type: array, items: { type: string } }
+
+    ScenePropRef:
+      type: object
+      required: [prop_name, scene_state]
+      additionalProperties: false
+      properties:
+        prop_name: { type: string, minLength: 1 }
+        scene_state: { type: string, minLength: 1 }
+        rules: { type: array, items: { type: string } }
+        alert_on_change: { type: boolean, default: true }
+
+    EmotionalBeat:
+      type: object
+      required: [character, emotion_start, emotion_end, intensity]
+      additionalProperties: false
+      properties:
+        character: { type: string, minLength: 1 }
+        emotion_start: { type: string, minLength: 1, maxLength: 100 }
+        emotion_end: { type: string, minLength: 1, maxLength: 100 }
+        intensity: { type: number, minimum: 0.0, maximum: 1.0 }
+
+    SceneDefinition:
+      type: object
+      required: [number, title, plot_weight]
+      additionalProperties: false
+      properties:
+        number: { type: integer, minimum: 1 }
+        title: { type: string, minLength: 1, maxLength: 300 }
+        setting: { type: string, maxLength: 300 }
+        characters_present: { type: array, items: { type: string } }
+        plot_weight: { $ref: "#/components/schemas/PlotWeight" }
+        critical_props: { type: array, items: { $ref: "#/components/schemas/ScenePropRef" } }
+        important_props: { type: array, items: { $ref: "#/components/schemas/ScenePropRef" } }
+        incidental_props: { type: array, items: { $ref: "#/components/schemas/ScenePropRef" } }
+        emotional_beats: { type: array, items: { $ref: "#/components/schemas/EmotionalBeat" } }
+        emotional_tone: { type: string, maxLength: 500 }
+        lighting_notes: { type: string, maxLength: 500 }
+        setups_introduced: { type: array, items: { type: string } }
+        payoffs_delivered: { type: array, items: { type: string } }
+        continuity_rules: { type: array, items: { type: string } }
+        notes_for_shadow: { type: string, maxLength: 1000 }
+
+    SetupPayoffLink:
+      type: object
+      required: [description, setup_scene, payoff_scene]
+      additionalProperties: false
+      properties:
+        description: { type: string, minLength: 5, maxLength: 500 }
+        setup_scene: { type: integer, minimum: 1 }
+        payoff_scene: { type: integer, minimum: 1 }
+        prop_involved: { type: string, nullable: true }
+        status: { type: string, enum: [open, resolved, abandoned], default: open }
+
+    PlotKnowledgeGraph:
+      type: object
+      required: [production_title, total_scenes, scenes]
+      additionalProperties: false
+      properties:
+        production_title: { type: string, maxLength: 200 }
+        total_scenes: { type: integer, minimum: 1 }
+        scenes: { type: array, items: { $ref: "#/components/schemas/SceneDefinition" }, minItems: 1 }
+        props: { type: array, items: { $ref: "#/components/schemas/PropDefinition" } }
+        emotional_arcs: { type: array, items: { $ref: "#/components/schemas/EmotionalBeat" } }
+        setups: { type: array, items: { $ref: "#/components/schemas/SetupPayoffLink" } }
+        extraction_warnings: { type: array, items: { type: string } }
+
+    # ── analyze_take schemas ─────────────────────────────────────────
+
+    AnomalyFlag:
+      type: object
+      required: [anomaly_type, frame, timestamp, severity, confidence]
+      additionalProperties: false
+      properties:
+        anomaly_type:
+          type: string
+          enum: [prop_position_change, prop_state_change, prop_missing, prop_appeared,
+                 actor_position_shift, lighting_change, unknown]
+        prop: { type: string, nullable: true }
+        frame: { type: integer, minimum: 1 }
+        timestamp: { type: number, minimum: 0.0 }
+        severity: { type: string, enum: [critical, high, medium, low, info] }
+        confidence: { type: number, minimum: 0.0, maximum: 1.0 }
+        description: { type: string, maxLength: 500 }
+
+    YoloMath:
+      type: object
+      required: [take_id, scene, shot, take, duration_seconds, frames_analyzed]
+      additionalProperties: false
+      properties:
+        take_id:
+          type: string
+          pattern: "^s[0-9]+_sh[0-9]+_t[0-9]+$"
+          description: "Format: s{scene}_sh{shot}_t{take_number}"
+        scene: { type: integer, minimum: 1 }
+        shot: { type: integer, minimum: 1 }
+        take: { type: integer, minimum: 1 }
+        duration_seconds: { type: number, exclusiveMinimum: 0 }
+        frames_analyzed: { type: integer, minimum: 1 }
+        fps: { type: integer, minimum: 1, default: 30 }
+        anomaly_flags: { type: array, items: { $ref: "#/components/schemas/AnomalyFlag" } }
+        tracked_objects: { type: array, items: { type: string } }
+
+    PropReference:
+      type: object
+      required: [name, importance]
+      additionalProperties: false
+      properties:
+        name: { type: string, minLength: 1 }
+        importance: { $ref: "#/components/schemas/PlotWeight" }
+        rules: { type: array, items: { type: string } }
+        first_scene: { type: integer, minimum: 1, default: 1 }
+        last_scene: { type: integer, minimum: 1, nullable: true }
+        payoff_scene: { type: integer, minimum: 1, nullable: true }
+        state_requirements: { type: array, items: { type: string } }
+
+    SceneContext:
+      type: object
+      required: [scene_number, scene_title]
+      additionalProperties: false
+      properties:
+        scene_number: { type: integer, minimum: 1 }
+        scene_title: { type: string, minLength: 1, maxLength: 200 }
+        characters: { type: array, items: { type: string } }
+        emotional_tone: { type: string, maxLength: 500 }
+        lighting_notes: { type: string, maxLength: 500 }
+        critical_props: { type: array, items: { $ref: "#/components/schemas/PropReference" } }
+        important_props: { type: array, items: { $ref: "#/components/schemas/PropReference" } }
+        setups: { type: array, items: { type: string } }
+        payoffs: { type: array, items: { type: string } }
+
+    AnomalyVerdict:
+      type: object
+      required: [anomaly_index, verdict, confidence, severity, explanation]
+      additionalProperties: false
+      properties:
+        anomaly_index: { type: integer, minimum: 0 }
+        verdict: { type: string, enum: [real_issue, false_alarm, uncertain] }
+        confidence: { type: number, minimum: 0.0, maximum: 1.0 }
+        severity: { type: string, enum: [critical, warning, info] }
+        explanation: { type: string, minLength: 1, maxLength: 1000 }
+
+    PerformanceNote:
+      type: object
+      required: [character, note, matches_required_tone]
+      additionalProperties: false
+      properties:
+        character: { type: string, minLength: 1 }
+        note: { type: string, minLength: 1, maxLength: 500 }
+        matches_required_tone: { type: boolean }
+
+    MissedIssue:
+      type: object
+      required: [description, severity]
+      additionalProperties: false
+      properties:
+        description: { type: string, minLength: 1, maxLength: 500 }
+        severity: { type: string, enum: [critical, warning, info] }
+        prop_involved: { type: string, nullable: true }
+
+    FlashLiteResult:
+      type: object
+      required: [take_id]
+      additionalProperties: false
+      properties:
+        take_id: { type: string, pattern: "^s[0-9]+_sh[0-9]+_t[0-9]+$" }
+        verdicts: { type: array, items: { $ref: "#/components/schemas/AnomalyVerdict" } }
+        missed_issues: { type: array, items: { $ref: "#/components/schemas/MissedIssue" } }
+        performance_notes: { type: array, items: { $ref: "#/components/schemas/PerformanceNote" } }
+        audio_transcript: { type: string, maxLength: 5000 }
+        needs_escalation: { type: boolean, default: false }
+        escalation_reason: { type: string, maxLength: 500, nullable: true }
+        processing_time_ms: { type: integer, minimum: 0 }
+        tokens_used: { type: integer, minimum: 0 }
+        cost_usd: { type: number, minimum: 0.0 }
+
+    # ── check_continuity schemas ─────────────────────────────────────
+
+    PropStateSnapshot:
+      type: object
+      required: [prop_name, observed_state, confidence]
+      additionalProperties: false
+      properties:
+        prop_name: { type: string, minLength: 1 }
+        observed_state: { type: string, minLength: 1 }
+        confidence: { type: number, minimum: 0.0, maximum: 1.0 }
+        frame: { type: integer, minimum: 1, default: 1 }
+        timestamp: { type: number, minimum: 0.0, default: 0.0 }
+
+    Take:
+      type: object
+      required: [take_id, scene, shot, take_number]
+      additionalProperties: false
+      properties:
+        take_id: { type: string, pattern: "^s[0-9]+_sh[0-9]+_t[0-9]+$" }
+        scene: { type: integer, minimum: 1 }
+        shot: { type: integer, minimum: 1 }
+        take_number: { type: integer, minimum: 1 }
+        prop_states: { type: array, items: { $ref: "#/components/schemas/PropStateSnapshot" } }
+        emotional_tone: { type: string, maxLength: 500 }
+        notes: { type: string, maxLength: 1000 }
+
+    ContinuityMatch:
+      type: object
+      required: [prop_name, current_take_id, previous_take_id, state, confidence]
+      additionalProperties: false
+      properties:
+        prop_name: { type: string }
+        current_take_id: { type: string }
+        previous_take_id: { type: string }
+        state: { type: string }
+        confidence: { type: number, minimum: 0.0, maximum: 1.0 }
+
+    ContinuityMismatch:
+      type: object
+      required: [prop_name, current_state, expected_state, current_take_id, previous_take_id, plot_weight, severity]
+      additionalProperties: false
+      properties:
+        prop_name: { type: string }
+        current_state: { type: string }
+        expected_state: { type: string }
+        current_take_id: { type: string }
+        previous_take_id: { type: string }
+        plot_weight: { $ref: "#/components/schemas/PlotWeight" }
+        severity: { type: string, enum: [critical, warning, info] }
+        rule_violated: { type: string, nullable: true }
+
+    CrossSceneIssue:
+      type: object
+      required: [description, scenes_involved, severity]
+      additionalProperties: false
+      properties:
+        description: { type: string, minLength: 1, maxLength: 500 }
+        scenes_involved: { type: array, items: { type: integer }, minItems: 2 }
+        prop_name: { type: string, nullable: true }
+        severity: { type: string, enum: [critical, warning, info] }
+
+    ContinuityReport:
+      type: object
+      required: [current_take_id]
+      additionalProperties: false
+      properties:
+        current_take_id: { type: string }
+        matches: { type: array, items: { $ref: "#/components/schemas/ContinuityMatch" } }
+        mismatches: { type: array, items: { $ref: "#/components/schemas/ContinuityMismatch" } }
+        cross_scene_issues: { type: array, items: { $ref: "#/components/schemas/CrossSceneIssue" } }
+        total_props_checked: { type: integer, minimum: 0 }
+        issues_found: { type: integer, minimum: 0 }
+
+    # ── flag_alert schemas ────────────────────────────────────────────
+
+    Anomaly:
+      type: object
+      required: [category, scene]
+      additionalProperties: false
+      properties:
+        category: { type: string, minLength: 1, maxLength: 200 }
+        prop_name: { type: string, nullable: true }
+        scene: { type: integer, minimum: 1 }
+        is_cross_scene: { type: boolean, default: false }
+        is_novel: { type: boolean, default: false }
+        evidence_source_count: { type: integer, minimum: 0, default: 1 }
+        description: { type: string, maxLength: 500 }
+
+    AlertDecision:
+      type: object
+      required: [action, confidence, plot_weight, reasoning]
+      additionalProperties: false
+      properties:
+        action: { $ref: "#/components/schemas/AlertAction" }
+        confidence: { type: number, minimum: 0.0, maximum: 1.0 }
+        plot_weight: { $ref: "#/components/schemas/PlotWeight" }
+        reasoning: { type: string, minLength: 5, maxLength: 1000 }
+        should_escalate_to_pro: { type: boolean, default: false }
+        escalation_reason: { type: string, maxLength: 500, nullable: true }
+
+    # ── query_memory schemas ─────────────────────────────────────────
+
+    MemoryChunk:
+      type: object
+      required: [chunk_id, source_collection, text, relevance_score]
+      additionalProperties: false
+      properties:
+        chunk_id: { type: string, minLength: 1 }
+        source_collection: { type: string, enum: [takes, alerts, plot_graph, reports] }
+        scene: { type: integer, minimum: 1, nullable: true }
+        take_id: { type: string, nullable: true }
+        text: { type: string, minLength: 1, maxLength: 2000 }
+        relevance_score: { type: number, minimum: 0.0, maximum: 1.0 }
+        timestamp: { type: string, maxLength: 50 }
+
+    MemoryQueryResult:
+      type: object
+      required: [question]
+      additionalProperties: false
+      properties:
+        question: { type: string }
+        chunks: { type: array, items: { $ref: "#/components/schemas/MemoryChunk" } }
+        sources: { type: array, items: { type: string } }
+        total_found: { type: integer, minimum: 0 }
+        scene_filter_applied: { type: integer, minimum: 1, nullable: true }
+
+    # ── generate_report schemas ──────────────────────────────────────
+
+    TakeAccuracyRow:
+      type: object
+      required: [scene, takes_analyzed, alerts_generated, confirmed_alerts, false_positives, accuracy]
+      additionalProperties: false
+      properties:
+        scene: { type: integer, minimum: 1 }
+        takes_analyzed: { type: integer, minimum: 0 }
+        alerts_generated: { type: integer, minimum: 0 }
+        confirmed_alerts: { type: integer, minimum: 0 }
+        false_positives: { type: integer, minimum: 0 }
+        accuracy: { type: number, minimum: 0.0, maximum: 1.0 }
+
+    CostBreakdown:
+      type: object
+      additionalProperties: false
+      properties:
+        flash_lite_calls: { type: integer, minimum: 0 }
+        pro_escalations: { type: integer, minimum: 0 }
+        flash_lite_cost_usd: { type: number, minimum: 0.0 }
+        pro_cost_usd: { type: number, minimum: 0.0 }
+        total_cost_usd: { type: number, minimum: 0.0 }
+
+    DailyReport:
+      type: object
+      required: [production_id, date_from, date_to, takes_analyzed, alerts_generated,
+                 confirmed_alerts, false_positives, accuracy, cost, savings_estimate_usd]
+      additionalProperties: false
+      properties:
+        production_id: { type: string, minLength: 1 }
+        date_from: { type: string, minLength: 8, maxLength: 20 }
+        date_to: { type: string, minLength: 8, maxLength: 20 }
+        takes_analyzed: { type: integer, minimum: 0 }
+        alerts_generated: { type: integer, minimum: 0 }
+        confirmed_alerts: { type: integer, minimum: 0 }
+        false_positives: { type: integer, minimum: 0 }
+        accuracy: { type: number, minimum: 0.0, maximum: 1.0 }
+        cost: { $ref: "#/components/schemas/CostBreakdown" }
+        savings_estimate_usd: { type: number, minimum: 0.0 }
+        scene_breakdown: { type: array, items: { $ref: "#/components/schemas/TakeAccuracyRow" } }
+        top_alert_categories: { type: array, items: { type: string } }
+        notes: { type: string, maxLength: 2000 }
+
+    # ── Error ─────────────────────────────────────────────────────────
+    Error:
+      type: object
+      required: [code, message]
+      additionalProperties: false
+      properties:
+        code: { type: string }
+        message: { type: string }
+
+security:
+  - ApiKeyAuth: []
+
+# =============================================================================
+# Paths (one endpoint per tool)
+# =============================================================================
+paths:
+
+  # ---------------------------------------------------------------------------
+  # TOOL 1 — parse_script
+  # ---------------------------------------------------------------------------
+  /tools/parse_script:
+    post:
+      operationId: parse_script
+      summary: Parse a film script into a Plot Knowledge Graph
+      description: |
+        Sends the full script text to Gemini 2.5 Pro with the Shadow Cut extraction
+        prompt. Validates the response against PlotKnowledgeGraph and returns all
+        scenes, props, emotional arcs, and setup/payoff links.
+      x-ibm-nl-intent: "Parse or analyse a film script"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [script_text]
+              additionalProperties: false
+              properties:
+                script_text:
+                  type: string
+                  description: Full text of the script (PDF/Fountain pre-converted to text).
+                format:
+                  type: string
+                  enum: [pdf, fountain, txt]
+                  default: txt
+                  description: Source format hint for logging purposes.
+      responses:
+        "200":
+          description: Plot Knowledge Graph extracted successfully.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PlotKnowledgeGraph" }
+        "422":
+          description: Schema validation failed after retry.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ---------------------------------------------------------------------------
+  # TOOL 2 — analyze_take
+  # ---------------------------------------------------------------------------
+  /tools/analyze_take:
+    post:
+      operationId: analyze_take
+      summary: Validate a take with Gemini Flash-Lite multimodal analysis
+      description: |
+        Builds a structured prompt from YOLO anomaly data and scene context, then sends
+        it (with the raw video if available) to Gemini Flash-Lite for cross-modal
+        validation. Returns per-anomaly verdicts and an escalation flag.
+      x-ibm-nl-intent: "Analyse or validate a film take"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [video_path, yolo_math, scene_context]
+              additionalProperties: false
+              properties:
+                video_path:
+                  type: string
+                  description: Filesystem path or GCS URI of the proxy video.
+                yolo_math:
+                  $ref: "#/components/schemas/YoloMath"
+                scene_context:
+                  $ref: "#/components/schemas/SceneContext"
+      responses:
+        "200":
+          description: Flash-Lite validation result.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FlashLiteResult" }
+        "422":
+          description: Validation error.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ---------------------------------------------------------------------------
+  # TOOL 3 — check_continuity
+  # ---------------------------------------------------------------------------
+  /tools/check_continuity:
+    post:
+      operationId: check_continuity
+      summary: Check prop continuity across takes and against script rules
+      description: |
+        Compares a take's prop states against previous takes (prop-to-prop check),
+        against the expected states in the PlotKnowledgeGraph (script-rule check),
+        and against setup/payoff links (cross-scene check).
+      x-ibm-nl-intent: "Check continuity errors between takes"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_take, previous_takes, plot_graph]
+              additionalProperties: false
+              properties:
+                current_take:
+                  $ref: "#/components/schemas/Take"
+                previous_takes:
+                  type: array
+                  items: { $ref: "#/components/schemas/Take" }
+                plot_graph:
+                  $ref: "#/components/schemas/PlotKnowledgeGraph"
+      responses:
+        "200":
+          description: Continuity report.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContinuityReport" }
+        "422":
+          description: Validation error.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ---------------------------------------------------------------------------
+  # TOOL 4 — flag_alert
+  # ---------------------------------------------------------------------------
+  /tools/flag_alert:
+    post:
+      operationId: flag_alert
+      summary: Apply the Decision Matrix to an anomaly and return the alert action
+      description: |
+        Implements the locked v2.0 Decision Matrix from confidence_escalation_logic.md.
+        PlotWeight is a gate (not a multiplier). Budget guard runs first.
+        Returns ALERT | SILENT_LOG | SUPPRESS | ESCALATE with full reasoning.
+      x-ibm-nl-intent: "Decide whether to alert the director about an anomaly"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [anomaly, confidence, plot_weight]
+              additionalProperties: false
+              properties:
+                anomaly:
+                  $ref: "#/components/schemas/Anomaly"
+                confidence:
+                  type: number
+                  minimum: 0.0
+                  maximum: 1.0
+                  description: |
+                    Pre-calculated TechnicalConfidence.
+                    Formula: EvidenceQuality × HistoricalAccuracy × DirectorTrust
+                plot_weight:
+                  $ref: "#/components/schemas/PlotWeight"
+                pro_budget_remaining:
+                  type: integer
+                  minimum: 0
+                  default: 50
+                  description: Pro escalation budget remaining today.
+      responses:
+        "200":
+          description: Alert decision.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AlertDecision" }
+        "422":
+          description: Validation error.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ---------------------------------------------------------------------------
+  # TOOL 5 — query_memory
+  # ---------------------------------------------------------------------------
+  /tools/query_memory:
+    post:
+      operationId: query_memory
+      summary: Search Shadow Memory for a director or continuity question
+      description: |
+        Queries the takes, alerts, plot_graph, and reports Firestore collections
+        for content relevant to the question, optionally filtered to a single scene.
+        Returns ranked memory chunks with source references.
+      x-ibm-nl-intent: "Search production memory or ask about past takes"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question]
+              additionalProperties: false
+              properties:
+                question:
+                  type: string
+                  description: Natural-language question, e.g. "Where was the watch in scene 5?"
+                scene_filter:
+                  type: integer
+                  minimum: 1
+                  nullable: true
+                  description: Restrict results to this scene number.
+                top_k:
+                  type: integer
+                  minimum: 1
+                  maximum: 20
+                  default: 5
+      responses:
+        "200":
+          description: Memory query result.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemoryQueryResult" }
+        "422":
+          description: Validation error.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ---------------------------------------------------------------------------
+  # TOOL 6 — generate_report
+  # ---------------------------------------------------------------------------
+  /tools/generate_report:
+    post:
+      operationId: generate_report
+      summary: Generate a DailyReport (Trust Report) for a production
+      description: |
+        Aggregates take analysis results and director-confirmed alerts from Firestore
+        for the specified date window, calculates accuracy, cost breakdown, and a
+        conservative reshoot savings estimate.
+      x-ibm-nl-intent: "Generate a daily or production report"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [date_range, production_id]
+              additionalProperties: false
+              properties:
+                date_range:
+                  type: array
+                  items: { type: string }
+                  minItems: 2
+                  maxItems: 2
+                  description: "[date_from, date_to] as ISO-8601 strings, e.g. [\"2026-08-01\", \"2026-08-01\"]"
+                production_id:
+                  type: string
+                  minLength: 1
+                  description: Production identifier, e.g. "shadow-cut-hackathon"
+      responses:
+        "200":
+          description: Daily Trust Report.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DailyReport" }
+        "422":
+          description: Validation error.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+# =============================================================================
+# watsonx Orchestrate deployment metadata
+# =============================================================================
+x-ibm-application:
+  name: shadow-cut-mcp
+  displayName: Shadow Cut MCP Tools
+  version: "1.0.0"
+  description: AI script supervisor tools for continuity detection on film productions.
+  category: media-production
+  icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJMNCAyMGgxNkwxMiAyeiIgZmlsbD0iIzFhMWExYSIvPjwvc3ZnPg=="
+
+  # Skills registered in watsonx Orchestrate
+  skills:
+    - operationId: parse_script
+      displayName: Parse Film Script
+      description: Extract Plot Knowledge Graph from a film script using Gemini 2.5 Pro.
+      categories: [script-analysis]
+
+    - operationId: analyze_take
+      displayName: Analyse Take
+      description: Validate a camera take with Gemini Flash-Lite multimodal analysis.
+      categories: [take-analysis]
+
+    - operationId: check_continuity
+      displayName: Check Continuity
+      description: Compare prop states across takes and against script rules.
+      categories: [continuity]
+
+    - operationId: flag_alert
+      displayName: Flag Alert
+      description: Apply the Decision Matrix to determine ALERT / SILENT_LOG / SUPPRESS / ESCALATE.
+      categories: [alerting, decision-matrix]
+
+    - operationId: query_memory
+      displayName: Query Memory
+      description: Search Shadow Memory (Firestore) to answer director questions.
+      categories: [memory, search]
+
+    - operationId: generate_report
+      displayName: Generate Report
+      description: Produce a DailyReport with accuracy, cost, and savings metrics.
+      categories: [reporting]
+
+  # Environment variables required at deployment
+  environment:
+    GEMINI_API_KEY:
+      description: Google AI / Gemini API key
+      required: true
+      secret: true
+    GOOGLE_CLOUD_PROJECT:
+      description: GCP project ID
+      required: true
+    FIRESTORE_PROJECT_ID:
+      description: Firestore project ID (usually same as GOOGLE_CLOUD_PROJECT)
+      required: true
+    GCS_BUCKET:
+      description: GCS bucket for proxy videos
+      required: true
+    SHADOW_CUT_MCP_BASE_URL:
+      description: Base URL of the deployed Shadow Cut MCP container
+      required: true
+    SHADOW_CUT_API_KEY:
+      description: API key for X-Shadow-Cut-API-Key header authentication
+      required: true
+      secret: true
+    PRO_ESCALATION_BUDGET:
+      description: Maximum Pro escalations per day (default 50)
+      required: false
+      default: "50"

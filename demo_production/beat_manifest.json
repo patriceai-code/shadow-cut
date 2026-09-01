@@ -1,0 +1,186 @@
+[
+  {
+    "id": "act1_b1_title",
+    "act": 1,
+    "visual_type": "still",
+    "visual_file": "intro_title.png",
+    "text": "On a film set, missing a single continuity error can cost upwards of fifty to one hundred thousand dollars in pickup reshoots.",
+    "audio_file": "demo_production\\audio_synced\\act1_b1_title.mp3",
+    "raw_duration": 7.368,
+    "duration": 7.518
+  },
+  {
+    "id": "act1_b2_movie",
+    "act": 1,
+    "visual_type": "movie_clip",
+    "visual_file": "farmhouse_scene.mp4",
+    "text": "With multi-camera shoots and thirty-to-one shooting ratios, human script supervisors are overwhelmed tracking thousands of props, wardrobe states, and lighting setups by hand.",
+    "audio_file": "demo_production\\audio_synced\\act1_b2_movie.mp3",
+    "raw_duration": 10.08,
+    "duration": 10.23
+  },
+  {
+    "id": "act1_b3_crisis",
+    "act": 1,
+    "visual_type": "still",
+    "visual_file": "problem_card.png",
+    "text": "When continuity errors are caught in post-production, reshoots can easily derail a production budget.",
+    "audio_file": "demo_production\\audio_synced\\act1_b3_crisis.mp3",
+    "raw_duration": 5.952,
+    "duration": 6.102
+  },
+  {
+    "id": "act1_b4_solution",
+    "act": 1,
+    "visual_type": "still",
+    "visual_file": "solution_card.png",
+    "text": "Meet Shadow Cut \u2014 the autonomous AI script supervisor that watches every take as it's filmed, grounds visual evidence against the authentic screenplay, and alerts the director while still on set.",
+    "audio_file": "demo_production\\audio_synced\\act1_b4_solution.mp3",
+    "raw_duration": 11.616,
+    "duration": 11.766
+  },
+  {
+    "id": "act2_b1_architecture",
+    "act": 2,
+    "visual_type": "still",
+    "visual_file": "architecture_card.png",
+    "text": "Shadow Cut uses a multi-tier agentic cascade: Tier 1 runs local Yo-low World spatial tracking on edge hardware, while Tier 2 streams take proxies to Gemini 3.5 Flash Lite for native multimodal reasoning.",
+    "audio_file": "demo_production\\audio_synced\\act2_b1_architecture.mp3",
+    "raw_duration": 13.872,
+    "duration": 14.022
+  },
+  {
+    "id": "act2_b2_bob_intro",
+    "act": 2,
+    "visual_type": "bob_recording",
+    "visual_file": "bob_layout_bg.png",
+    "ss": 5.0,
+    "text": "For the Agentic Cinema IBM Track, IBM Bob served as our runtime nervous system.",
+    "audio_file": "demo_production\\audio_synced\\act2_b2_bob_intro.mp3",
+    "raw_duration": 5.52,
+    "duration": 5.67
+  },
+  {
+    "id": "act2_b3_bob_servers",
+    "act": 2,
+    "visual_type": "bob_recording",
+    "visual_file": "bob_layout_bg.png",
+    "ss": 20.0,
+    "text": "Bob generated all six Model Context Protocol servers in Python, and established thirty-one strict Pydantic schemas with zero dynamic dictionaries.",
+    "audio_file": "demo_production\\audio_synced\\act2_b3_bob_servers.mp3",
+    "raw_duration": 9.216,
+    "duration": 9.366
+  },
+  {
+    "id": "act2_b4_watsonx_confluent",
+    "act": 2,
+    "visual_type": "bob_recording",
+    "visual_file": "bob_layout_bg.png",
+    "ss": 38.0,
+    "text": "Bob built our 777-line OpenAPI specification for IBM Watson X Orchestrate, and implemented real-time Confluent Kafka streaming with an automated fallback webhook.",
+    "audio_file": "demo_production\\audio_synced\\act2_b4_watsonx_confluent.mp3",
+    "raw_duration": 11.328,
+    "duration": 11.478
+  },
+  {
+    "id": "act3_b1_audit_title",
+    "act": 3,
+    "visual_type": "still",
+    "visual_file": "audit_title.png",
+    "text": "To prove Shadow Cut on genuine cinema, we conducted a twenty-minute audit of 142 cuts from George Romero's 1968 classic Night of the Living Dead, cross-referenced against the authentic screenplay.",
+    "audio_file": "demo_production\\audio_synced\\act3_b1_audit_title.mp3",
+    "raw_duration": 12.48,
+    "duration": 12.63
+  },
+  {
+    "id": "act3_b2_barricade",
+    "act": 3,
+    "visual_type": "still",
+    "visual_file": "evidence_1_barricade.png",
+    "text": "First, at thirty-seven minutes, a Critical Retake Alert caught visible pencil carpentry measurements and 'Upper Right Corner' written on the raw barricade lumber facing the lens.",
+    "audio_file": "demo_production\\audio_synced\\act3_b2_barricade.mp3",
+    "raw_duration": 10.56,
+    "duration": 10.71
+  },
+  {
+    "id": "act3_b3_lighter",
+    "act": 3,
+    "visual_type": "still",
+    "visual_file": "evidence_2_lighter_fluid.png",
+    "text": "Second, a lighter fluid canister jump between the fireplace hearth and chair across reverse cuts, flagged for Director Review.",
+    "audio_file": "demo_production\\audio_synced\\act3_b3_lighter.mp3",
+    "raw_duration": 7.032,
+    "duration": 7.182
+  },
+  {
+    "id": "act3_b4_rifle",
+    "act": 3,
+    "visual_type": "still",
+    "visual_file": "evidence_3_rifle.png",
+    "text": "Third, an actor staging jump where the repeating rifle shifts from vertical against the doorway to horizontal across Ben's lap, logged silently in memory.",
+    "audio_file": "demo_production\\audio_synced\\act3_b4_rifle.mp3",
+    "raw_duration": 9.168,
+    "duration": 9.318
+  },
+  {
+    "id": "act3_b5_table",
+    "act": 3,
+    "visual_type": "still",
+    "visual_file": "evidence_4_table_deviation.png",
+    "text": "And fourth, a performance deviation where Duane Jones ripped an oak table apart bare-handed. Under our Director Autonomy Principle, the director can Retake, Dismiss, or Accept Risk on actor improvisation.",
+    "audio_file": "demo_production\\audio_synced\\act3_b5_table.mp3",
+    "raw_duration": 12.264,
+    "duration": 12.414
+  },
+  {
+    "id": "act4_b1_dashboard",
+    "act": 4,
+    "visual_type": "ui_segment",
+    "ss": 0.5,
+    "text": "On set, directors monitor production through our dark-room Next.js Command Center, tracking audited cuts, critical retake alerts, and a ninety-nine-point-two percent script compliance score.",
+    "audio_file": "demo_production\\audio_synced\\act4_b1_dashboard.mp3",
+    "raw_duration": 11.4,
+    "duration": 11.55
+  },
+  {
+    "id": "act4_b2_alerts",
+    "act": 4,
+    "visual_type": "ui_segment",
+    "ss": 16.5,
+    "text": "Filmmakers inspect side-by-side frame comparisons on flagged cuts, and review screenplay performance deviations.",
+    "audio_file": "demo_production\\audio_synced\\act4_b2_alerts.mp3",
+    "raw_duration": 6.744,
+    "duration": 6.894
+  },
+  {
+    "id": "act4_b3_chat",
+    "act": 4,
+    "visual_type": "ui_segment",
+    "ss": 23.0,
+    "text": "They can query Shadow Memory in natural language, retrieving grounded timestamps, prop states, and script rules in real time.",
+    "audio_file": "demo_production\\audio_synced\\act4_b3_chat.mp3",
+    "raw_duration": 7.416,
+    "duration": 7.566
+  },
+  {
+    "id": "act4_b4_trust_report",
+    "act": 4,
+    "visual_type": "ui_segment",
+    "ss": 31.0,
+    "text": "Deployed live on Google Cloud Run, Shadow Cut provides real-time continuity protection for just seven dollars per movie \u2014 preventing fifty-thousand-dollar reshoots with a seven-thousand-X return on investment.",
+    "audio_file": "demo_production\\audio_synced\\act4_b4_trust_report.mp3",
+    "raw_duration": 11.976,
+    "duration": 12.126
+  },
+  {
+    "id": "act4_b5_outro",
+    "act": 4,
+    "visual_type": "still",
+    "visual_file": "outro_card.png",
+    "text": "Shadow Cut: The director still directs. The Shadow just remembers.",
+    "extra_padding": 2.1,
+    "audio_file": "demo_production\\audio_synced\\act4_b5_outro.mp3",
+    "raw_duration": 4.32,
+    "duration": 6.42
+  }
+]

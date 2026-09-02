@@ -8,7 +8,7 @@
       "verdict": "false_alarm",
       "confidence": 0.85,
       "severity": "info",
-      "explanation": "Minor camera angle or tracking shift at the end of the take; the picture frame on the wall remains securely mounted."
+      "explanation": "Minor camera angle or tracking jitter, the picture frame remains securely on the wall."
     },
     {
       "prop": "person",
@@ -17,21 +17,22 @@
       "verdict": "false_alarm",
       "confidence": 0.9,
       "severity": "info",
-      "explanation": "Actor movement is natural and continuous as part of the blocking."
+      "explanation": "Actor movement is part of the normal blocking and action within the scene."
     },
     {
       "prop": "shoes",
       "frame": 1798,
       "timestamp": 59.99,
       "verdict": "false_alarm",
-      "confidence": 0.9,
+      "confidence": 0.8,
       "severity": "info",
-      "explanation": "Shoes remain on character's feet as required by continuity rules."
+      "explanation": "Shoe position shift is due to character movement, no continuity break."
     }
   ],
   "missed_issues": [],
   "performance_notes": [
-    "Actor effectively conveys high tension and desperation while struggling with furniture and describing the chaotic truck incident."
+    "Actor effectively conveys high tension and urgency while handling furniture and pantomiming the truck driving sequence.",
+    "Good physical performance matching the required desperate and chaotic tone of the scene."
   ],
   "needs_escalation": false,
   "escalation_reason": null,

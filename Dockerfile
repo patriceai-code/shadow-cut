@@ -10,7 +10,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY shadow_cut/ ./shadow_cut/
-COPY .env .
+COPY test_data/ ./test_data/
+COPY ui/out/ ./ui/out/
 
 EXPOSE 8080
 

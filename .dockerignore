@@ -1,0 +1,13 @@
+.venv/
+.git/
+ui/node_modules/
+ui/.next/
+test_data/notld/farmhouse_scene_full.mp4
+test_data/notld/farmhouse_siege_20min.mp4
+test_data/notld/*.mp4
+demo_production/
+demo_captures/
+models/
+__pycache__/
+*.pyc
+.pytest_cache/

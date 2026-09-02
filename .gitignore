@@ -8,7 +8,9 @@ venv/
 *.egg-info/
 node_modules/
 .next/
+ui/.next/
 out/
+!ui/out/
 *.mp4
 *.mov
 *.avi
@@ -24,3 +26,9 @@ service-account.json
 .vscode/
 .idea/
 *.swp
+demo_captures/
+demo_production/clips/
+demo_production/verification_frames/
+demo_production/audio/
+demo_production/audio_synced/
+demo_production/synced_clips/

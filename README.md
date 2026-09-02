@@ -46,11 +46,11 @@ curl -s -X POST https://shadow-cut-api-713353926846.us-central1.run.app/api/chat
 ## 🎬 Demo Video & Devpost Submission
 
 > **Official 3-Minute Master Demo Video Ready**:
-> * **Master File (1080p, 60fps):** [`demo_production/shadow_cut_official_demo.mp4`](../demo_production/shadow_cut_official_demo.mp4) (Exact Runtime: **`2:53`** — fully within the 3:00 limit)
+> * **Master File (1080p, 60fps):** [`demo_production/shadow_cut_official_demo.mp4`](demo_production/shadow_cut_official_demo.mp4) (Exact Runtime: **`2:53`** — fully within the 3:00 limit)
 > * **[▶ Watch the 3-Minute Demo Video on YouTube](https://youtube.com/watch?v=YOUR_VIDEO_ID)** *(Replace `YOUR_VIDEO_ID` with YouTube unlisted link upon upload, or review the master MP4 directly)*
-> * **[Devpost Submission Narrative](devpost_submission.md)**
-> * **[IBM Bob Architectural Blueprint](../BOB_INTEGRATION.md)**
-> * **[Demo Video Script & Forensic Dossier](DEMO_VIDEO_EVIDENCE_DOSSIER.md)**
+> * **[Devpost Submission Narrative](Google%20Hackathon/devpost_submission.md)**
+> * **[IBM Bob Architectural Blueprint](BOB_INTEGRATION.md)**
+> * **[Demo Video Script & Forensic Dossier](Google%20Hackathon/DEMO_VIDEO_EVIDENCE_DOSSIER.md)**
 
 ---
 
@@ -93,19 +93,19 @@ Shadow Cut uncovered **four authentic historical continuity breaks and script de
 The Shadow Cut front-end is an authentic dark-room command center built with **Next.js 14, React, Tailwind CSS, and Lucide Icons**, engineered specifically for on-set DIT carts and script supervisor tablets.
 
 ### 1. Master On-Set Dashboard
-![Master Dashboard Overview](../docs/images/dashboard_overview.png)
+![Master Dashboard Overview](docs/images/dashboard_overview.png)
 *Real-time multi-camera take monitor, 99.2% script compliance gauge, and live continuity queue.*
 
 ### 2. Continuity Alert Queue & Director Action Triage
-![Alert Triage View](../docs/images/alert_triage.png)
+![Alert Triage View](docs/images/alert_triage.png)
 *Side-by-side photographic evidence crops with one-touch Director Autonomy triage buttons: `RETAKE REQUIRED`, `DIRECTOR REVIEW REQUIRED`, and `LOG ONLY`.*
 
 ### 3. Grounded Director Chat (Shadow Memory RAG)
-![Grounded Director Chat](../docs/images/director_chat.png)
+![Grounded Director Chat](docs/images/director_chat.png)
 *Sub-50ms natural language query interface answering director queries with grounded screenplay scene, take, and timecode citations.*
 
 ### 4. End-of-Day Script Supervisor Trust Report
-![Script Supervisor Trust Report](../docs/images/trust_report.png)
+![Script Supervisor Trust Report](docs/images/trust_report.png)
 *Automated wrap report detailing take compliance, audited cuts, and quantitative $50,000+ reshoot prevention ROI.*
 
 ---
@@ -130,20 +130,20 @@ In Shadow Cut, IBM Bob is not merely an AI code assistant — **IBM Bob generate
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-1. **6 Model Context Protocol (MCP) Servers** ([`../shadow_cut/mcp_servers/`](../shadow_cut/mcp_servers/)):
-   * [`script_parser.py`](../shadow_cut/mcp_servers/script_parser.py): Parses PDF/text screenplays into structured Plot Knowledge Graphs.
-   * [`analyze_take.py`](../shadow_cut/mcp_servers/analyze_take.py): Extracts object trajectories, bounding boxes, and audio cues.
-   * [`check_continuity.py`](../shadow_cut/mcp_servers/check_continuity.py): Computes physical cut-to-cut delta between takes.
-   * [`flag_alert.py`](../shadow_cut/mcp_servers/flag_alert.py): Evaluates confidence math against the director decision matrix.
-   * [`query_memory.py`](../shadow_cut/mcp_servers/query_memory.py): Vector semantic search over Firestore take memory.
-   * [`generate_report.py`](../shadow_cut/mcp_servers/generate_report.py): Compiles daily continuity and financial savings reports.
-2. **31 Strict Pydantic v2 Schemas** ([`../shadow_cut/models/schemas.py`](../shadow_cut/models/schemas.py)):
+1. **6 Model Context Protocol (MCP) Servers** ([`shadow_cut/mcp_servers/`](shadow_cut/mcp_servers/)):
+   * [`script_parser.py`](shadow_cut/mcp_servers/script_parser.py): Parses PDF/text screenplays into structured Plot Knowledge Graphs.
+   * [`analyze_take.py`](shadow_cut/mcp_servers/analyze_take.py): Extracts object trajectories, bounding boxes, and audio cues.
+   * [`check_continuity.py`](shadow_cut/mcp_servers/check_continuity.py): Computes physical cut-to-cut delta between takes.
+   * [`flag_alert.py`](shadow_cut/mcp_servers/flag_alert.py): Evaluates confidence math against the director decision matrix.
+   * [`query_memory.py`](shadow_cut/mcp_servers/query_memory.py): Vector semantic search over Firestore take memory.
+   * [`generate_report.py`](shadow_cut/mcp_servers/generate_report.py): Compiles daily continuity and financial savings reports.
+2. **31 Strict Pydantic v2 Schemas** ([`shadow_cut/models/schemas.py`](shadow_cut/models/schemas.py)):
    * Complete type safety across the entire pipeline. `Dict[str, Any]` is strictly banned across all models to guarantee reliable runtime execution.
-3. **IBM watsonx Orchestrate Specification** ([`../shadow_cut/data/shadow_cut_orchestrate.yaml`](../shadow_cut/data/shadow_cut_orchestrate.yaml)):
+3. **IBM watsonx Orchestrate Specification** ([`shadow_cut/data/shadow_cut_orchestrate.yaml`](shadow_cut/data/shadow_cut_orchestrate.yaml)):
    * A complete **777-line OpenAPI 3.0 specification** exposing all six Shadow Cut tools as native IBM watsonx Orchestrate skills.
-4. **Cinematic Next.js 14 Command Center** ([`../ui/`](../ui/)):
+4. **Cinematic Next.js 14 Command Center** ([`ui/`](ui/)):
    * Bob architected and generated the modular UI components (`DashboardView`, `AlertDetailView`, `ScriptDeviationsView`, `ChatView`, `ConfidenceRing`, `Badge`, `Card`).
-5. **Confluent Kafka Streaming Consumer & Fallback** ([`../shadow_cut/stream/confluent_consumer.py`](../shadow_cut/stream/confluent_consumer.py)):
+5. **Confluent Kafka Streaming Consumer & Fallback** ([`shadow_cut/stream/confluent_consumer.py`](shadow_cut/stream/confluent_consumer.py)):
    * Built with a thread-safe sync-to-async asyncio bridge, cluster health probe, and automatic fallback to a local webhook queue.
 
 ### Runtime Tool Dispatch & MCP Evidence
@@ -167,7 +167,7 @@ print(f"Autonomous Action: {action}")  # Output: 'ALERT' (Instant silent push)
 ```
 
 > [!TIP]
-> **Complete IBM Blueprint:** Read [`../BOB_INTEGRATION.md`](../BOB_INTEGRATION.md) for the exhaustive breakdown of all 6 MCP servers, 31 Pydantic v2 schemas, watsonx OpenAPI specifications, and the comparative matrix of What Bob Built vs Cinematic Domain Logic.
+> **Complete IBM Blueprint:** Read [`BOB_INTEGRATION.md`](BOB_INTEGRATION.md) for the exhaustive breakdown of all 6 MCP servers, 31 Pydantic v2 schemas, watsonx OpenAPI specifications, and the comparative matrix of What Bob Built vs Cinematic Domain Logic.
 
 ---
 
@@ -391,8 +391,8 @@ npm run dev
 
 ## 🗄️ Production Database & Observability
 
-* **Firestore Composite Indexes** ([`../firestore.indexes.json`](../firestore.indexes.json)): Pre-configured production indexes optimizing multi-field queries (`scene`, `take`, `timestamp`, `confidence`) for sub-second take lookups across thousands of production takes.
-* **Structured JSON Telemetry** ([`../shadow_cut/core/logger.py`](../shadow_cut/core/logger.py)): Configured with `structlog` to emit structured JSON logs in Cloud Run production and human-readable colorized logs in local development.
+* **Firestore Composite Indexes** ([`firestore.indexes.json`](firestore.indexes.json)): Pre-configured production indexes optimizing multi-field queries (`scene`, `take`, `timestamp`, `confidence`) for sub-second take lookups across thousands of production takes.
+* **Structured JSON Telemetry** ([`shadow_cut/core/logger.py`](shadow_cut/core/logger.py)): Configured with `structlog` to emit structured JSON logs in Cloud Run production and human-readable colorized logs in local development.
 
 ---
 

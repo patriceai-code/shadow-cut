@@ -1,5 +1,5 @@
 # === Core ===
-fastapi>=0.115.0
+fastapi[standard]>=0.136.0
 python-multipart>=0.0.9
 pydantic>=2.8.0
 pydantic-settings>=2.4.0
@@ -9,7 +9,7 @@ uvicorn>=0.30.0
 # === Google Cloud ===
 google-cloud-firestore>=2.16.0
 google-cloud-storage>=2.18.0
-google-genai>=0.1.1
+google-genai>=2.20.0
 
 # === Confluent ===
 confluent-kafka>=2.4.0

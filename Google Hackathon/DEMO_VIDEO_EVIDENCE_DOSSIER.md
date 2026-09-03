@@ -6,119 +6,91 @@
 ## 🎬 PART 1: 3-MINUTE TRAILER & DEMO VIDEO SCRIPT
 
 ### [0:00 - 0:30] THE HOOK: The Million-Dollar Reshoot Problem
-- **Visual**: Dramatic B-roll of movie production set / clapboard cutting. Cut to a clip of George A. Romero's *Night of the Living Dead* (1968).
+- **Visual**: Dramatic footage of film slate cutting. Cut to George A. Romero's *Night of the Living Dead* (1968).
 - **Voiceover (Director / Zach)**: 
-  > *"On a film set, missing a single continuity error can cost a production over $100,000 in pickup reshoots. Today, human script supervisors still track thousands of props, wardrobe states, and lighting angles by hand under chaotic conditions.*
-  > *Meet **Shadow Cut** — the autonomous real-time script supervisor that watches every take as it's filmed, cross-references your script's plot knowledge graph, and flags continuity breaks before the director yells 'Wrap'."*
+  > *"On a film set, missing a single continuity error can cost an indie or studio production upwards of $100,000 in pickup reshoots. Today, human script supervisors still track thousands of props, wardrobe states, and lighting setups by hand in chaotic environments.*
+  > *Meet **Shadow Cut** — the autonomous, real-time script supervisor that watches every take as it's filmed, cross-references the original shooting screenplay, and flags objective continuity breaks while leaving the director in total creative control."*
 
 ---
 
-### [0:30 - 1:15] THE ARCHITECTURE: Hybrid Edge-to-Cloud Intelligence
-- **Visual**: Screen capture of terminal and architecture diagram showing YOLO-World, Gemini 3.5, and IBM Watsonx.
+### [0:30 - 1:15] THE ARCHITECTURE: Screenplay-Grounded Intelligence
+- **Visual**: Architecture schematic showing Screenplay $\rightarrow$ YOLO-World $\rightarrow$ Gemini 3.5 Flash-Lite $\rightarrow$ IBM Watsonx.
 - **Voiceover**:
-  > *"Instead of relying on expensive brute-force AI, Shadow Cut runs a three-tier architecture:*
-  > 1. **Tier 1 (Local Edge)**: YOLO-World tracks spatial coordinates frame-by-frame on CPU at 1 fps with zero latency.
-  > 2. **Tier 2 (Multimodal Reasoning)**: When an anomaly occurs, raw native video streams directly to **Gemini 3.5 Flash-Lite** via Google GenAI to evaluate film grammar, blocking, and narrative context.
-  > 3. **The Gatekeeper**: Our Confidence Decision Matrix prevents director alert fatigue—filtering natural actor movement into silent logs while escalating genuine flaws.
-  > 4. **IBM Track Integration**: Built and orchestrated with IBM Bob and Watsonx MCP tools to manage memory, continuity rules, and automated reports."*
+  > *"Shadow Cut doesn't guess from isolated video clips. It ingests the **actual shooting screenplay** into a structured Plot Knowledge Graph before cameras roll:*
+  > 1. **Tier 1 (Edge Tracking)**: Local YOLO-World spatial tracking on CPU at 1 fps with zero latency.
+  > 2. **Tier 2 (Multimodal Reasoning)**: 20-minute native video streams to **Gemini 3.5 Flash-Lite** to compare the filmed reality against the written text across all 142 cuts.
+  > 3. **Director Autonomy Engine**: The AI never dictates creative choices. It classifies issues into **RETAKE REQUIRED**, **DIRECTOR REVIEW REQUIRED**, or **LOG ONLY**, giving the filmmaker instant interactive controls.
+  > 4. **IBM Track Integration**: Built and orchestrated with IBM Bob and Watsonx MCP tools to manage take memory and automated production trust reports."*
 
 ---
 
-### [1:15 - 2:15] THE HERO TEST: 20 Minutes of Real Cinema History
-- **Visual**: Screen recording showing `test_data/notld/farmhouse_scene_full.mp4` running through the pipeline.
+### [1:15 - 2:15] THE HERO AUDIT: 20 Minutes of Real Cinema History
+- **Visual**: Video player scrubbing through `test_data/notld/farmhouse_scene_full.mp4` with side-by-side forensic evidence cards.
 - **Voiceover**:
-  > *"We didn't just test Shadow Cut on staged toy clips. We fed it the full, continuous 20-minute Farmhouse sequence from George A. Romero's 1968 classic, 'Night of the Living Dead', analyzing **142 cuts**.*
-  > *First, it nailed the holy grail of film trivia at **37:08** — identifying the faint crew writing on the barricade plank that reads **'UPPER RIGHT CORNER'** with 99% confidence.*
-  > *Then something unbelievable happened: **Shadow Cut discovered 3 genuine continuity errors that film buffs missed for 58 years**:*
-  > - *At **33:01**, the 'Charcoal Lighter' fluid box flips 180° between cuts from the branded logo to a blank white side.*
-  > - *At **36:32**, the hallway closet shelf contents jump between wide and tight cuts, with high heels suddenly spilling outward.*
-  > - *And at **41:11**, Harry Cooper's key-light shadow flips from screen-left to screen-right across dialogue cuts.*
-  > *None of these three errors appear anywhere on IMDb Goofs, MovieMistakes, or Reddit."*
+  > *"We tested Shadow Cut against the complete, continuous 20-minute Farmhouse Siege sequence from Romero's 1968 classic, evaluating **142 cuts** against the authentic shooting script.*
+  > *First, it flagged a **RETAKE REQUIRED** at **09:41** with **99% confidence** — detecting visible carpenter handwriting and measurements written directly on the barricade planks before being nailed to the window frame.*
+  > *Second, it performed true script supervision: noticing at **00:00** that Duane Jones disregarded the scripted iron tire iron to wrench the oak dining table apart with his bare hands — an intentional actor performance choice the director can **Accept Risk** on.*
+  > *Third, it caught genuine physical discrepancies: the 'Charcoal Lighter' fluid container shifting position between the fireplace hearth and chair, and subtle key-light contrast shifts on Harry Cooper as he emerges from the cellar."*
 
 ---
 
 ### [2:15 - 3:00] THE COMMAND CENTER: Real-Time Director Experience
-- **Visual**: Full walkthrough of the Next.js Cinematic Dashboard running live on `localhost:3000`.
+- **Visual**: Live interactive walkthrough of the Next.js Cinematic Dashboard running on `localhost:3000`.
 - **Voiceover**:
   > *"On set, the director interacts through our dark-mode Cinematic Command Center:*
-  > - **The Dashboard**: Instant status cards showing 142 cuts analyzed, 6 flagged anomalies, and an 82% continuity health score.
-  > - **Alert Detail View**: Instant side-by-side evidence with one-click 'Retake Take' or 'Accept Risk' buttons.
-  > - **Chat with Shadow**: A natural language direct line to the AI, backed by Firestore and Gemini 3.5 memory, answering questions like 'Why did you flag the board at 37:08?' with exact film timestamps.
-  > - **The Trust Report**: Demonstrating **$45,000 in reshoot savings** achieved for an API compute cost of just **$0.038**.
+  > - **The Dashboard**: Live status cards showing 142 cuts analyzed, 1 Critical Retake alert, 1 Review item, and 82% continuity health.
+  > - **Continuity Queue**: Side-by-side visual forensic frames with instant **[Retake Take]**, **[Accept Risk]**, and **[Dismiss]** buttons.
+  > - **Script Deviations Tab**: Clear comparison between what was written on the page vs what was performed on camera.
+  > - **Chat with Shadow**: A natural language direct line to the AI, backed by Firestore and Gemini 3.5 memory.
+  > - **The Trust Report**: Demonstrating **$45,000 in reshoot savings** achieved for an API compute cost of just **$0.046**.
   > *Shadow Cut: The director still directs. Shadow catches the rest."*
 
 ---
 
 ## 🔍 PART 2: FORENSIC CONTINUITY EVIDENCE DOSSIER
 
-### 1. Catalogued Trivia Errors (Confirmed by Model)
-
-#### A. Crew Construction Marking: "UPPER RIGHT CORNER"
-- **Film Timestamp**: `37:08` | **Clip Timestamp**: `12:08`
+### 1. 🚨 Critical Alert: RETAKE REQUIRED
+- **Film Timestamp**: `09:41` | **Clip Timestamp**: `09:41`
 - **Category**: Set Construction Prop Flaw
-- **Confidence Score**: `99%`
-- **Visual Proof**: As Ben lifts a reinforcement plank to secure the upstairs door/window, black grease-pencil lettering reading `"UPPER RIGHT CORNER"` is visibly facing the camera before being hammered into the frame.
-- **Frame Path**: `test_data/notld/evidence_frames/upper_right_corner_1208.jpg`
-
-#### B. Winchester Rifle Bolt/Muzzle Flip
-- **Film Timestamp**: `37:15` | **Clip Timestamp**: `12:15`
-- **Category**: Weapon Prop Continuity
-- **Confidence Score**: `95%`
-- **Visual Proof**: Ben pulls the lever-action rifle from the closet. Between consecutive close-up and medium reverse cuts, the muzzle angle and bolt direction flip 180° relative to his grip.
-
-#### C. Barbra's Footwear Continuity
-- **Film Timestamp**: `39:48` | **Clip Timestamp**: `14:48`
-- **Category**: Wardrobe Continuity
-- **Confidence Score**: `91%`
-- **Visual Proof**: Barbra lies in shock on the couch. In earlier wide establishing shots she is barefoot; in tighter reverse cuts her shoes/slippers suddenly reappear on her feet without any on-screen action.
-- **Frame Path**: `test_data/notld/evidence_frames/door_zoom_0050.jpg`
+- **Action Required**: **`RETAKE REQUIRED`**
+- **Confidence Score**: **`99%`** (`0.99`)
+- **Visual Proof**: During the close-up shot of Ben nailing horizontal reinforcement planks across the window/door frame, visible handwritten numbers and carpenter markings are present on the raw lumber facing the camera.
+- **Technical Impact**: Breaches the cinematic fourth wall by revealing set construction materials directly on camera.
+- **Evidence Frame**: [`test_data/notld/evidence_frames/01_retake_plank_markings_0941.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/01_retake_plank_markings_0941.jpg)
 
 ---
 
-### 2. The 3 Brand-New / Undiscovered Errors (World First)
+### 2. ⚠️ Warning Alert: DIRECTOR REVIEW REQUIRED
 
-#### Error 1: Charcoal Starter Fluid Can Logo Flip
-- **Film Timestamp**: `33:01` | **Clip Timestamp**: `08:01`
-- **Category**: Handheld Prop Continuity
-- **Confidence Score**: `88%`
-- **Visual Evidence**:
-  - **Frame 1 (`07:58`)**: `test_data/notld/evidence_frames/charcoal_before_0758.jpg`
-    - Ben holds a white rectangular container in his right hand near the fireplace. The bold black circular emblem reading **"CHARCOAL LIGHTER"** faces squarely toward the camera.
-  - **Frame 2 (`08:32`)**: `test_data/notld/evidence_frames/charcoal_after_0832.jpg`
-    - Cut to the tighter angle as he places the can down next to the chair. The container has rotated 180°—the side facing the camera is completely blank white with no emblem.
-- **Web Verification**: 0 mentions on IMDb, MovieMistakes, or Reddit trivia.
+#### Charcoal Lighter Fluid Container Placement
+- **Film Timestamp**: `07:58` | **Clip Timestamp**: `07:58`
+- **Category**: Prop Continuity
+- **Action Required**: **`DIRECTOR REVIEW REQUIRED`**
+- **Confidence Score**: **`95%`** (`0.95`)
+- **Visual Proof**: The rectangular 'Charcoal Lighter' fluid container position shifts slightly across cuts near the fireplace and chair.
+- **Technical Impact**: Spatial discontinuity in prop handling during torch preparation.
+- **Evidence Frame**: [`test_data/notld/evidence_frames/02_review_charcoal_lighter_0758.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/02_review_charcoal_lighter_0758.jpg)
 
-#### Error 2: Hallway Closet Shelf Shoe Disarray
-- **Film Timestamp**: `36:32` | **Clip Timestamp**: `11:32`
-- **Category**: Set Staging / Set Dressing
-- **Confidence Score**: `92%`
-- **Visual Evidence**:
-  - **Frame 1 (`11:32`)**: `test_data/notld/evidence_frames/closet_wide_1132.jpg`
-    - Wide establishing shot of Ben standing before the upstairs hallway closet. The middle shelf is neat with boxes and linens sitting flat and horizontal.
-  - **Frame 2 (`11:38`)**: `test_data/notld/evidence_frames/closet_insert_1138.jpg`
-    - Immediate cut to a tight insert shot inside the shelf. The shoe box is tipped vertically, and white high heels are splayed in disarray across the patterned paper.
-- **Web Verification**: Trivia notes a "box of bullets", but this specific shelf prop rearrangement jump across the cut has never been catalogued as a continuity error.
+---
 
-#### Error 3: Key Light Shadow Reversal on Harry Cooper
-- **Film Timestamp**: `41:11` | **Clip Timestamp**: `16:11`
+### 3. 📋 Minor Alert: LOG ONLY (Natural Lighting Shift)
+
+#### Key-Light Contrast Shift on Harry Cooper
+- **Film Timestamp**: `15:33` | **Clip Timestamp**: `15:33`
 - **Category**: Lighting Continuity
-- **Confidence Score**: `87%`
-- **Visual Evidence**:
-  - **Frame 1 (`16:11`)**: `test_data/notld/evidence_frames/cooper_shadow_1611.jpg`
-    - Medium shot of Harry Cooper emerging from the cellar. A hard key light from stage-right casts his entire dark silhouette and head shadow onto the bare wall to his right (screen-left).
-  - **Frame 2 (`16:23`)**: `test_data/notld/evidence_frames/cooper_shadow_1623.jpg`
-    - Cut to the two-shot with Ben. The hard shadow on the screen-left wall has completely vanished, and the key light has been relocated to illuminate Ben from front-left.
-- **Web Verification**: 0 mentions of this specific scene or timestamp.
+- **Action Required**: **`LOG ONLY`**
+- **Confidence Score**: **`91%`** (`0.91`)
+- **Visual Proof**: Noticeable contrast and shadow intensity shift on Harry Cooper's face between the initial cellar door emergence and subsequent argument cuts.
+- **Technical Impact**: Multi-camera lighting variation common in low-budget black-and-white cinematography.
+- **Evidence Frame**: [`test_data/notld/evidence_frames/03_log_cooper_lighting_1533.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/03_log_cooper_lighting_1533.jpg)
 
 ---
 
-## 📊 PART 3: PROVEN DEMO METRICS
+### 4. 📜 Screenplay Deviations (Written vs Performed)
 
-- **Sequence Analyzed**: Minutes 25:00 - 45:00 (20 continuous minutes)
-- **Total Camera Cuts Evaluated**: 142 cuts
-- **Catalogued Errors Verified**: 3 (including 99% confidence on the "Upper Right Corner" easter egg)
-- **Novel Errors Discovered**: 3
-- **Overall Continuity Health Score**: 82%
-- **Compute Cost (Gemini 3.5 Flash-Lite)**: $0.038
-- **Estimated Reshoot Savings**: $45,000 (1 day of pickup shooting avoided)
-- **Decision Engine False Alarm Suppressions**: 100% of non-essential actor movements filtered to silent logs
+#### Table Dismantling Action
+- **Film Timestamp**: `00:00` | **Clip Timestamp**: `00:00`
+- **Scripted**: *"Ben begins wrenching off table legs and planks using an iron tire iron and hammer."*
+- **Filmed Reality**: Ben forcefully rips and kicks the table apart using his bare hands and body weight without any visible tire iron or hammer.
+- **Director Action**: **`ACCEPT RISK`** (Physical struggle reads intensely on camera; minor tool inventory divergence).
+- **Evidence Frame**: [`test_data/notld/evidence_frames/04_script_deviation_table_0045.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/04_script_deviation_table_0045.jpg)

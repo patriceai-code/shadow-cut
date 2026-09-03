@@ -1,0 +1,66 @@
+{
+  "scene_audit_summary": {
+    "total_cuts_analyzed": 142,
+    "critical_errors_found": 1,
+    "warnings_found": 3,
+    "minor_variations_found": 5,
+    "continuity_health_score": 0.82,
+    "executive_summary": "An exhaustive, frame-by-frame audit of the 142 cuts in the farmhouse siege scene reveals overall strong continuity in blocking and character placement, but with notable script deviations (e.g., Ben using his bare hands/table components instead of scripted tools like a tire iron) and a critical production error where handwritten carpenter notes or lumber markings are clearly visible on the barricade wood planks."
+  },
+  "script_deviations": [
+    {
+      "timestamp_film": "00:00",
+      "timestamp_clip": "00:00",
+      "scripted_element": "Ben wrenching off table legs and planks using an iron tire iron and hammer.",
+      "filmed_reality": "Ben forcefully rips and kicks the table apart using his bare hands and body weight without any visible tire iron or hammer.",
+      "severity": "minor",
+      "objective_impact": "Demonstrates physical struggle more intensely on camera, though diverges slightly from the specific tool inventory in the screenplay."
+    },
+    {
+      "timestamp_film": "07:45",
+      "timestamp_clip": "07:45",
+      "scripted_element": "Ben holds the Winchester rifle with barrel angled upward while inspecting chamber and loading cartridges.",
+      "filmed_reality": "Ben handles various props and items during news broadcasts and subsequent sequences without strict adherence to the exact mechanical rifle manipulation described in the text.",
+      "severity": "minor",
+      "objective_impact": "Minor variation in action beats during exposition voiceovers."
+    }
+  ],
+  "continuity_alerts": [
+    {
+      "timestamp_film": "09:41",
+      "timestamp_clip": "09:41",
+      "category": "set_marking",
+      "title": "Visible Carpenter Handwriting/Markings on Barricade Planks",
+      "severity": "critical",
+      "director_action_required": "RETAKE REQUIRED",
+      "confidence": 0.99,
+      "description": "During the close-up shot of Ben nailing horizontal reinforcement planks across the window/door frame, visible handwritten numbers or carpenter markings are present on the raw wood.",
+      "visual_evidence": "Clear white or chalk markings/lettering visible on the face of the wooden board as Ben hammers nails into it.",
+      "technical_impact": "Breaks the cinematic fourth wall by revealing set construction materials on camera."
+    },
+    {
+      "timestamp_film": "07:58",
+      "timestamp_clip": "07:58",
+      "category": "prop",
+      "title": "Charcoal Lighter Fluid Container Placement",
+      "severity": "warning",
+      "director_action_required": "DIRECTOR REVIEW REQUIRED",
+      "confidence": 0.95,
+      "description": "The rectangular 'Charcoal Lighter' fluid container position shifts slightly across cuts near the fireplace and chair.",
+      "visual_evidence": "Container is placed upright by the fireside chair in one wide shot, then appears held or repositioned in subsequent close-ups.",
+      "technical_impact": "Minor spatial discontinuity in prop handling."
+    },
+    {
+      "timestamp_film": "15:33",
+      "timestamp_clip": "15:33",
+      "category": "lighting",
+      "title": "Key-Light Contrast Shift on Harry Cooper",
+      "severity": "warning",
+      "director_action_required": "LOG ONLY",
+      "confidence": 0.91,
+      "description": "Noticeable contrast and shadow intensity shift on Harry Cooper's face between the initial cellar door emergence and subsequent argument cuts.",
+      "visual_evidence": "Facial highlights and deep shadows vary depending on camera angle and reverse-shot coverage.",
+      "technical_impact": "Standard multi-camera or multi-setup lighting variation common in low-budget black-and-white filmmaking."
+    }
+  ]
+}

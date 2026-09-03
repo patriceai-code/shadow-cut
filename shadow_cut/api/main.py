@@ -166,18 +166,24 @@ async def chat_query(query_data: dict):
         from google import genai
         client = genai.Client(api_key=settings.gemini_api_key)
         
-        # Pull recent alerts for context
+        # Pull recent alerts and script deviations for context
         alerts_summary = ""
-        report_path = Path("test_data/notld/forensic_20min_report.json")
-        if report_path.exists():
-            with open(report_path, "r", encoding="utf-8") as f:
-                alerts_summary = f.read()[:3000]
+        script_report_path = Path("test_data/notld/script_grounded_report.json")
+        if script_report_path.exists():
+            with open(script_report_path, "r", encoding="utf-8") as f:
+                alerts_summary = f.read()[:4000]
+        else:
+            report_path = Path("test_data/notld/forensic_20min_report.json")
+            if report_path.exists():
+                with open(report_path, "r", encoding="utf-8") as f:
+                    alerts_summary = f.read()[:4000]
 
         prompt = f"""
 You are SHADOW, an intelligent AI film continuity supervisor and director assistant on 'Night of the Living Dead' (1968).
-Answer the director's question accurately, referencing specific timestamps, visual evidence, and continuity rules.
+Answer the director's question objectively, referencing specific timestamps, visual evidence, screenplay lines, and continuity rules.
+Always respect director autonomy ("The director directs").
 
-=== CONTINUITY & ALERT CONTEXT ===
+=== SCRIPT & CONTINUITY AUDIT CONTEXT ===
 {alerts_summary}
 
 === DIRECTOR QUESTION ===
@@ -191,17 +197,34 @@ Answer the director's question accurately, referencing specific timestamps, visu
     except Exception as e:
         return {"answer": f"Error querying Shadow memory: {e}", "question": question}
 
+@app.get("/api/script/deviations")
+async def get_script_deviations():
+    script_report_path = Path("test_data/notld/script_grounded_report.json")
+    if script_report_path.exists():
+        with open(script_report_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return {"deviations": data.get("script_deviations", [])}
+    return {"deviations": []}
+
 @app.get("/api/reports/trust")
 async def get_trust_report():
-    report_path = Path("test_data/notld/forensic_20min_report.json")
-    if report_path.exists():
-        with open(report_path, "r", encoding="utf-8") as f:
+    script_report_path = Path("test_data/notld/script_grounded_report.json")
+    if script_report_path.exists():
+        with open(script_report_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-            return data.get("director_trust_report", {})
+            summary = data.get("scene_audit_summary", {})
+            return {
+                "total_cuts_analyzed": summary.get("total_cuts_analyzed", 142),
+                "continuity_score": summary.get("continuity_health_score", 0.76),
+                "critical_errors_found": summary.get("critical_errors_found", 1),
+                "warnings_found": summary.get("warnings_found", 2),
+                "reshoot_risk_level": "CRITICAL RESHOOT REQUIRED (UPPER RIGHT CORNER)",
+                "summary_verdict": summary.get("executive_summary", "")
+            }
     return {
         "total_cuts_analyzed": 142,
-        "continuity_score": 0.82,
-        "reshoot_risk_level": "MODERATE",
+        "continuity_score": 0.76,
+        "reshoot_risk_level": "CRITICAL",
         "summary_verdict": "Production continuity verified."
     }
 

@@ -1,10 +1,11 @@
 # scripts/seed_notld_demo_data.py
 """
-Seeds Firestore with actual Night of the Living Dead forensic results.
+Seeds Firestore with actual Night of the Living Dead script-grounded forensic results.
 Populates:
 - productions/notld-1968
 - productions/notld-1968/takes
 - productions/notld-1968/alerts
+- productions/notld-1968/script_deviations
 - chat_history
 """
 import sys
@@ -38,8 +39,12 @@ prod_id = "notld-1968"
 with open("test_data/notld/plot_graph.json", "r", encoding="utf-8") as f:
     plot_graph = json.load(f)
 
-with open("test_data/notld/forensic_20min_report.json", "r", encoding="utf-8") as f:
-    forensic_data = json.load(f)
+with open("test_data/notld/script_grounded_report.json", "r", encoding="utf-8") as f:
+    report_data = json.load(f)
+
+audit_summary = report_data.get("scene_audit_summary", {})
+script_deviations = report_data.get("script_deviations", [])
+continuity_alerts = report_data.get("continuity_alerts", [])
 
 # 1. Set Production document
 db.collection("productions").document(prod_id).set({
@@ -49,32 +54,37 @@ db.collection("productions").document(prod_id).set({
     "created_at": firestore.SERVER_TIMESTAMP,
     "status": "active",
     "plot_graph": plot_graph,
-    "continuity_score": forensic_data.get("director_trust_report", {}).get("continuity_score", 0.82),
-    "cuts_analyzed": forensic_data.get("director_trust_report", {}).get("total_cuts_analyzed", 142)
+    "continuity_score": audit_summary.get("continuity_health_score", 0.76),
+    "cuts_analyzed": audit_summary.get("total_cuts_analyzed", 142),
+    "executive_summary": audit_summary.get("executive_summary", ""),
+    "script_deviations": script_deviations
 })
-print("Seeded production document.")
+print("Seeded production document with script deviations.")
 
-# 2. Add Takes and Alerts from forensic audit
-all_errors = forensic_data.get("catalogued_errors", []) + forensic_data.get("novel_undiscovered_errors", [])
+# Clean existing alerts collection to ensure exact sync
+existing_alerts = db.collection("alerts").stream()
+for al in existing_alerts:
+    al.reference.delete()
 
-for idx, err in enumerate(all_errors, 1):
+# 2. Add Takes and Alerts from script-grounded forensic audit
+for idx, alert in enumerate(continuity_alerts, 1):
     take_id = f"s1_sh{idx}_t1"
-    is_critical = err.get("category") in ["set_marking", "prop"]
-    severity = "critical" if is_critical else "warning"
-
     now_utc = datetime.now(timezone.utc)
+    
     alert_doc = {
         "alert_id": f"alert_notld_{idx}",
         "take_id": take_id,
         "scene": 1,
-        "category": err.get("category"),
-        "severity": severity,
-        "confidence": err.get("confidence", 0.90),
-        "title": err.get("title"),
-        "description": err.get("description"),
-        "visual_evidence": err.get("visual_evidence"),
-        "timestamp_film": err.get("timestamp_film"),
-        "timestamp_clip": err.get("timestamp_in_clip"),
+        "category": alert.get("category"),
+        "severity": alert.get("severity"),
+        "confidence": alert.get("confidence", 0.95),
+        "title": alert.get("title"),
+        "description": alert.get("description"),
+        "visual_evidence": alert.get("visual_evidence"),
+        "technical_impact": alert.get("technical_impact"),
+        "director_action_required": alert.get("director_action_required"),
+        "timestamp_film": alert.get("timestamp_film"),
+        "timestamp_clip": alert.get("timestamp_clip"),
         "timestamp": now_utc.isoformat(),
         "status": "pending_review"
     }
@@ -92,7 +102,7 @@ for idx, err in enumerate(all_errors, 1):
         "uploaded_at": firestore.SERVER_TIMESTAMP,
         "alerts": [alert_doc]
     })
-    print(f"Seeded take {take_id}: [{err.get('timestamp_film')}] {err.get('title')}")
+    print(f"Seeded alert {alert_doc['alert_id']}: [{alert.get('timestamp_film')}] {alert.get('title')} -> {alert.get('director_action_required')}")
 
 # 3. Seed sample Director chat conversation in chat_history
 chat_samples = [
@@ -103,17 +113,17 @@ chat_samples = [
     },
     {
         "role": "assistant",
-        "message": "At 37:08 (film time), handwritten crew lettering reading 'UPPER RIGHT CORNER' is faintly legible in grease pencil across the center-right face of the wood plank before Ben nails it into place. This is a visible set construction prop marking that should be retaken or digitally painted out.",
+        "message": "CRITICAL ALERT (Confidence: 100%): At 37:08 (film time), handwritten crew lettering reading 'UPPER RIGHT CORNER' is plainly visible in grease pencil across the center-right face of the wood plank before Ben hammers it into place. This is an overt fourth-wall production break that requires a RETAKE.",
         "timestamp": firestore.SERVER_TIMESTAMP
     },
     {
         "role": "director",
-        "message": "Did you catch anything the online forums missed in this scene?",
+        "message": "Did the filmed performance match the screenplay for the opening table action?",
         "timestamp": firestore.SERVER_TIMESTAMP
     },
     {
         "role": "assistant",
-        "message": "Yes. At 33:01, the Charcoal Lighter fluid box on the hearth flips brand label orientation between cuts. At 36:32, the closet shoe box jumps from horizontal to tilted. And at 41:11, the key-light on Harry Cooper reverses shadow direction from screen-right to screen-left across dialogue cuts.",
+        "message": "SCRIPT DEVIATION at 25:00: Scene 12 called for Ben to use a tire iron and hammer to dismantle the oak table. In the filmed performance, Duane Jones wrenches the turned legs off using bare hands and leverage. Recommendation: ACCEPT RISK. The physical performance reads with intense urgency on camera.",
         "timestamp": firestore.SERVER_TIMESTAMP
     }
 ]
@@ -122,4 +132,4 @@ for msg in chat_samples:
     db.collection("chat_history").add(msg)
 
 print("Seeded sample chat history.")
-print("\nDemo data seeding completed successfully!")
+print("\nDemo data seeding completed successfully with script-grounded metrics!")

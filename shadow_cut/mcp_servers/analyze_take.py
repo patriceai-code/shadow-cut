@@ -111,7 +111,7 @@ def analyze_take(
 
     settings = get_settings()
     client = genai.Client(api_key=settings.gemini_api_key)
-    model = "gemini-2.0-flash-lite"
+    model = "gemini-3.5-flash-lite"
 
     prompt = _build_prompt(yolo_math, scene_context)
 

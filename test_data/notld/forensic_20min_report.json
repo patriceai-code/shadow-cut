@@ -1,0 +1,67 @@
+{
+  "sequence_summary": "Analysis of the crucial farmhouse boarding-up and survival preparations sequence in George A. Romero's 'Night of the Living Dead' (approx 25:00 - 45:00 in film time), detailing set construction markings, weapon handling, wardrobe inconsistencies, and micro-continuity errors.",
+  "catalogued_errors": [
+    {
+      "timestamp_in_clip": "12:08",
+      "timestamp_film": "37:08",
+      "category": "set_marking",
+      "title": "Crew Construction Board Marking: 'UPPER RIGHT CORNER'",
+      "description": "During the scene where Ben boards up the upstairs window / door area using wooden planks, one horizontal reinforcement board clearly displays crew writing on it. The text 'UPPER RIGHT CORNER' is faintly legible written in marker or grease pencil by the prop/set department.",
+      "visual_evidence": "At 12:08, as Ben lifts a wooden plank to nail it across the window frame, black handwritten lettering is visible on the center-right of the board facing the camera before it is nailed down.",
+      "confidence": 0.99
+    },
+    {
+      "timestamp_in_clip": "12:15",
+      "timestamp_film": "37:15",
+      "category": "prop",
+      "title": "Winchester Rifle Orientation Reversal",
+      "description": "Ben retrieves the Winchester lever-action rifle from the closet. Between consecutive close-up and medium cuts, the muzzle direction and bolt side flip relative to his grip.",
+      "visual_evidence": "Ben holds the rifle by the barrel pointing up in the closet, cuts to a tighter shot where the barrel orientation relative to the door frame flips 180 degrees.",
+      "confidence": 0.95
+    },
+    {
+      "timestamp_in_clip": "14:48",
+      "timestamp_film": "39:48",
+      "category": "wardrobe",
+      "title": "Barbra's Footwear Continuity",
+      "description": "Barbra lies on the living room couch traumatized. In earlier wide shots she is barefoot; in later close-ups on the couch, her feet and ankles briefly show stocking or slipper positioning changes.",
+      "visual_evidence": "Bare feet visible on couch edge at 11:13, but at 12:27 her shoes/slippers are back on her feet without any on-screen transition of putting them on.",
+      "confidence": 0.91
+    }
+  ],
+  "novel_undiscovered_errors": [
+    {
+      "timestamp_in_clip": "08:01",
+      "timestamp_film": "33:01",
+      "category": "prop",
+      "title": "Charcoal Starter Fluid Prop Box Flipping",
+      "description": "Ben picks up a white box of charcoal starter ('Charcoal Lighter') from the hearth. As he moves between setting it down and picking it up across angles, the printed brand label faces opposite directions.",
+      "visual_evidence": "Label clearly visible facing outward at 07:57, but when he places it down on the chair at 08:32, the blank white side faces the camera.",
+      "confidence": 0.88
+    },
+    {
+      "timestamp_in_clip": "11:32",
+      "timestamp_film": "36:32",
+      "category": "set_construction",
+      "title": "Closet Shelf Prop Shifting",
+      "description": "When Ben opens the hallway closet to search for weapons, the box of shoes and folded white garments on the middle shelf instantly rearrange themselves between the wide establishing shot and the medium insert shot.",
+      "visual_evidence": "At 11:32 a white shoe box sits horizontally; at 11:37 in the close-up, the shoe box is tilted vertically with white heels sliding out.",
+      "confidence": 0.92
+    },
+    {
+      "timestamp_in_clip": "16:11",
+      "timestamp_film": "41:11",
+      "category": "lighting",
+      "title": "Inconsistent Key Light Shadows on Harry Cooper",
+      "description": "Harry Cooper emerges from the cellar to argue with Ben. The primary hot key light source (simulating an interior lamp) casts harsh nasal shadows that jump from screen-right to screen-left across dialogue cuts.",
+      "visual_evidence": "At 16:11 Harry's left cheek is illuminated; upon cutting to Ben's reaction and back at 16:23, Harry's face lighting is reversed, indicating a shifted C-stand or dual-key setup on the low-budget indie set.",
+      "confidence": 0.87
+    }
+  ],
+  "director_trust_report": {
+    "total_cuts_analyzed": 142,
+    "continuity_score": 0.82,
+    "reshoot_risk_level": "MODERATE",
+    "summary_verdict": "Given the micro-budget 1968 independent constraints, Romero's sequence maintains commendable spatial geography during intense physical blocking. However, prominent set markings ('UPPER RIGHT CORNER') left on prop lumber and frequent prop/wardrobe re-orientations require careful digital patch work if remastering."
+  }
+}

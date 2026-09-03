@@ -1,0 +1,1486 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Shadow Cut MCP Server",
+    "version": "1.0.0",
+    "description": "Model Context Protocol tools for Shadow Cut \u2014 AI script supervisor. Built with IBM Bob for watsonx Orchestrate."
+  },
+  "servers": [
+    {
+      "url": "https://shadow-cut-api.run.app",
+      "description": "Production Cloud Run endpoint"
+    }
+  ],
+  "paths": {
+    "/tools/parse_script": {
+      "post": {
+        "summary": "Parse film script into Plot Knowledge Graph",
+        "description": "Ingests a full film script (PDF/TXT/Fountain) and extracts structured continuity data: scenes, props (critical vs incidental), character emotional arcs, setup/payoff links, and continuity rules. Returns a JSON graph that powers all downstream Shadow agents.",
+        "operationId": "parse_script",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "script_text",
+                  "production_title"
+                ],
+                "properties": {
+                  "script_text": {
+                    "type": "string",
+                    "description": "Full script text. Supports Fountain format, plain text, or extracted PDF text. 1M token max (Gemini 2.5 Pro context)."
+                  },
+                  "production_title": {
+                    "type": "string",
+                    "description": "Title of the film/production"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "fountain",
+                      "plain",
+                      "pdf_extracted"
+                    ],
+                    "default": "plain",
+                    "description": "Input format hint for the parser"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plot Knowledge Graph extracted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "graph": {
+                      "$ref": "#/components/schemas/PlotKnowledgeGraph"
+                    },
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "scenes_extracted": {
+                          "type": "integer"
+                        },
+                        "props_found": {
+                          "type": "integer"
+                        },
+                        "critical_props": {
+                          "type": "integer"
+                        },
+                        "setups_linked": {
+                          "type": "integer"
+                        },
+                        "processing_time_ms": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues (e.g., 'Scene 12 has no critical props \u2014 verify')"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid script format or empty input"
+          },
+          "413": {
+            "description": "Script exceeds 1M token limit"
+          },
+          "500": {
+            "description": "Gemini API failure or parsing error"
+          }
+        }
+      }
+    },
+    "/tools/validate_prop_state": {
+      "post": {
+        "summary": "Validate a prop's detected state against script rules",
+        "description": "Core continuity validation tool. Receives YOLO detection math for a single prop, compares against the Plot Knowledge Graph rules for that scene, and returns a verdict with confidence score. Called by the Continuity Agent for every detected prop change.",
+        "operationId": "validate_prop_state",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "prop_name",
+                  "detected_state",
+                  "scene_number",
+                  "take_id",
+                  "yolo_evidence"
+                ],
+                "properties": {
+                  "prop_name": {
+                    "type": "string",
+                    "description": "Canonical prop name from Plot Graph (e.g., 'watch', 'letter')"
+                  },
+                  "detected_state": {
+                    "type": "string",
+                    "description": "State detected by YOLO or inferred (e.g., 'left_wrist', 'folded', 'open')"
+                  },
+                  "scene_number": {
+                    "type": "integer",
+                    "description": "Scene being shot"
+                  },
+                  "take_id": {
+                    "type": "string",
+                    "description": "Unique take identifier (e.g., 's5_sh3_t2')"
+                  },
+                  "yolo_evidence": {
+                    "type": "object",
+                    "description": "Structured YOLO detection data",
+                    "properties": {
+                      "confidence": {
+                        "type": "number",
+                        "minimum": 0.0,
+                        "maximum": 1.0
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                      },
+                      "frame_number": {
+                        "type": "integer"
+                      },
+                      "timestamp": {
+                        "type": "number"
+                      },
+                      "previous_state": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  },
+                  "previous_take_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Previous take of same scene/shot for comparison"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation verdict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verdict": {
+                      "type": "string",
+                      "enum": [
+                        "valid",
+                        "violation",
+                        "uncertain",
+                        "not_in_script"
+                      ],
+                      "description": "valid = matches rules; violation = breaks continuity; uncertain = needs human review; not_in_script = prop not in graph"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "minimum": 0.0,
+                      "maximum": 1.0
+                    },
+                    "severity": {
+                      "type": "string",
+                      "enum": [
+                        "critical",
+                        "warning",
+                        "info",
+                        "silent"
+                      ]
+                    },
+                    "script_rule_violated": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "expected_state": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "explanation": {
+                      "type": "string"
+                    },
+                    "escalate_to_pro": {
+                      "type": "boolean"
+                    },
+                    "evidence_trail": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of evidence sources (e.g., 'YOLO detection frame 121', 'Script rule: Scene 5')"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/check_continuity": {
+      "post": {
+        "summary": "Cross-reference current take against previous takes and script",
+        "description": "Comprehensive continuity check. Compares the current take's object states against: (1) previous takes of the same scene/shot, (2) the script's Plot Graph rules, (3) emotional arc consistency. Returns a full continuity report with all detected mismatches.",
+        "operationId": "check_continuity",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "current_take",
+                  "scene_number",
+                  "shot_number"
+                ],
+                "properties": {
+                  "current_take": {
+                    "type": "object",
+                    "description": "Full take data from YOLO + Flash-Lite analysis",
+                    "properties": {
+                      "take_id": {
+                        "type": "string"
+                      },
+                      "object_states": {
+                        "type": "object"
+                      },
+                      "emotional_tone": {
+                        "type": "string"
+                      },
+                      "audio_transcript": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "scene_number": {
+                    "type": "integer"
+                  },
+                  "shot_number": {
+                    "type": "integer"
+                  },
+                  "previous_takes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    },
+                    "description": "Array of previous takes for this scene/shot"
+                  },
+                  "graph_snapshot": {
+                    "type": "object",
+                    "description": "Plot Graph slice for this scene only"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Continuity report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "continuity_score": {
+                      "type": "number",
+                      "minimum": 0.0,
+                      "maximum": 1.0
+                    },
+                    "mismatches": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "prop_state",
+                              "prop_position",
+                              "emotional_arc",
+                              "missing_prop",
+                              "new_prop",
+                              "lighting",
+                              "audio"
+                            ]
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "severity": {
+                            "type": "string",
+                            "enum": [
+                              "critical",
+                              "warning",
+                              "info"
+                            ]
+                          },
+                          "confidence": {
+                            "type": "number"
+                          },
+                          "affected_prop": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "recommended_action": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "cross_take_comparison": {
+                      "type": "object"
+                    },
+                    "script_compliance": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/escalate_to_pro": {
+      "post": {
+        "summary": "Escalate ambiguous or critical continuity issue to Gemini Pro",
+        "description": "Called ONLY when Flash-Lite confidence < 70% AND plot weight is CRITICAL, or when cross-scene narrative reasoning is required. Sends the full case file to Gemini Pro for deep analysis. This is the expensive tier \u2014 use sparingly.",
+        "operationId": "escalate_to_pro",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "case_id",
+                  "flash_lite_result",
+                  "yolo_math",
+                  "scene_context"
+                ],
+                "properties": {
+                  "case_id": {
+                    "type": "string"
+                  },
+                  "flash_lite_result": {
+                    "type": "object",
+                    "description": "Full Flash-Lite output that triggered escalation"
+                  },
+                  "yolo_math": {
+                    "type": "object",
+                    "description": "Complete YOLO detection data for the take"
+                  },
+                  "scene_context": {
+                    "type": "object",
+                    "description": "Plot Graph slice + script summary"
+                  },
+                  "cross_scene_context": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "description": "Previous scene data if cross-scene comparison needed"
+                  },
+                  "escalation_reason": {
+                    "type": "string",
+                    "enum": [
+                      "low_confidence",
+                      "critical_prop",
+                      "cross_scene_needed",
+                      "narrative_complexity"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pro-level analysis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pro_verdict": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "severity": {
+                      "type": "string"
+                    },
+                    "cross_scene_impact": {
+                      "type": "string"
+                    },
+                    "recommended_action": {
+                      "type": "string"
+                    },
+                    "estimated_fix_cost": {
+                      "type": "string",
+                      "enum": [
+                        "on_set_free",
+                        "post_expensive",
+                        "reshoot_catastrophic"
+                      ]
+                    },
+                    "narrative_logic_check": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/flag_alert": {
+      "post": {
+        "summary": "Decide whether to alert director or silently log",
+        "description": "The Shadow's final filter. Takes a validated continuity issue and applies the confidence + plot weight decision matrix. Returns ALERT (push notification), LOG (silent chat record), or SUPPRESS (ignore). Also tracks director override rates for learning.",
+        "operationId": "flag_alert",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "issue",
+                  "confidence_score",
+                  "plot_weight",
+                  "category"
+                ],
+                "properties": {
+                  "issue": {
+                    "type": "object"
+                  },
+                  "confidence_score": {
+                    "type": "number"
+                  },
+                  "plot_weight": {
+                    "type": "string",
+                    "enum": [
+                      "critical",
+                      "important",
+                      "incidental"
+                    ]
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Alert category (prop_state, prop_position, emotional_arc, etc.)"
+                  },
+                  "director_history": {
+                    "type": "object",
+                    "description": "Historical override rate for this category"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Alert decision",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "decision": {
+                      "type": "string",
+                      "enum": [
+                        "ALERT",
+                        "LOG",
+                        "SUPPRESS"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "notification_payload": {
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
+                    "chat_log_entry": {
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/query_memory": {
+      "post": {
+        "summary": "Search Shadow Memory for director queries",
+        "description": "RAG-powered search across all takes, alerts, director notes, and script context. Handles natural language questions from the director. Returns relevant chunks with sources and timestamps.",
+        "operationId": "query_memory",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "question"
+                ],
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "description": "Director's natural language query"
+                  },
+                  "scene_filter": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "Optional scene number to narrow search"
+                  },
+                  "character_filter": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "prop_filter": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "time_range": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "end": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  },
+                  "top_k": {
+                    "type": "integer",
+                    "default": 5,
+                    "description": "Number of relevant chunks to retrieve"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retrieved context + generated answer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "answer": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "sources": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "source_type": {
+                            "type": "string",
+                            "enum": [
+                              "take",
+                              "alert",
+                              "director_note",
+                              "script",
+                              "plot_graph"
+                            ]
+                          },
+                          "take_id": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "scene": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "timestamp": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "relevance_score": {
+                            "type": "number"
+                          },
+                          "excerpt": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "suggested_followups": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/generate_report": {
+      "post": {
+        "summary": "Generate daily Shadow summary report",
+        "description": "Produces the Trust Report dashboard data: takes analyzed, alerts generated, accuracy metrics, cost tracking, estimated savings. Called at end of shooting day or on demand.",
+        "operationId": "generate_report",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "date"
+                ],
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Shooting date (YYYY-MM-DD)"
+                  },
+                  "production_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Daily report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string"
+                    },
+                    "takes_analyzed": {
+                      "type": "integer"
+                    },
+                    "alerts_generated": {
+                      "type": "integer"
+                    },
+                    "alerts_confirmed": {
+                      "type": "integer"
+                    },
+                    "alerts_dismissed": {
+                      "type": "integer"
+                    },
+                    "accuracy_rate": {
+                      "type": "number"
+                    },
+                    "cost_today": {
+                      "type": "number"
+                    },
+                    "cost_cumulative": {
+                      "type": "number"
+                    },
+                    "estimated_savings": {
+                      "type": "number"
+                    },
+                    "roi_multiplier": {
+                      "type": "number"
+                    },
+                    "category_breakdown": {
+                      "type": "object"
+                    },
+                    "trustworthiness_score": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PlotKnowledgeGraph": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ShadowCutPlotKnowledgeGraph",
+        "description": "Structured representation of a film script for continuity-aware AI supervision",
+        "type": "object",
+        "required": [
+          "production_title",
+          "scenes",
+          "props",
+          "characters",
+          "setups",
+          "emotional_arcs"
+        ],
+        "properties": {
+          "production_title": {
+            "type": "string",
+            "description": "Title of the film/production"
+          },
+          "scenes": {
+            "type": "object",
+            "description": "All scenes indexed by scene number",
+            "additionalProperties": {
+              "$ref": "#/definitions/Scene"
+            }
+          },
+          "props": {
+            "type": "object",
+            "description": "All props indexed by canonical name (snake_case)",
+            "additionalProperties": {
+              "$ref": "#/definitions/Prop"
+            }
+          },
+          "characters": {
+            "type": "object",
+            "description": "All characters indexed by canonical name",
+            "additionalProperties": {
+              "$ref": "#/definitions/Character"
+            }
+          },
+          "setups": {
+            "type": "object",
+            "description": "Narrative setups that require payoffs later",
+            "additionalProperties": {
+              "$ref": "#/definitions/Setup"
+            }
+          },
+          "emotional_arcs": {
+            "type": "object",
+            "description": "Emotional trajectory per character across the film",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EmotionalBeat"
+              }
+            }
+          }
+        },
+        "definitions": {
+          "Scene": {
+            "type": "object",
+            "required": [
+              "number",
+              "title",
+              "setting",
+              "characters_present",
+              "plot_weight",
+              "critical_props",
+              "incidental_props"
+            ],
+            "properties": {
+              "number": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "title": {
+                "type": "string",
+                "description": "Scene heading or short descriptor"
+              },
+              "setting": {
+                "type": "string",
+                "description": "INT./EXT. location, time of day"
+              },
+              "characters_present": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Characters physically present in this scene"
+              },
+              "plot_weight": {
+                "type": "string",
+                "enum": [
+                  "CRITICAL",
+                  "IMPORTANT",
+                  "TRANSITIONAL",
+                  "INCIDENTAL"
+                ],
+                "description": "How much this scene matters to the overall narrative"
+              },
+              "critical_props": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PropReference"
+                },
+                "description": "Props that MUST maintain continuity. Setup/payoff props, character-defining items, plot MacGuffins."
+              },
+              "incidental_props": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PropReference"
+                },
+                "description": "Background props with NO continuity requirement. Coffee cups, background furniture, etc."
+              },
+              "emotional_tone": {
+                "type": "string",
+                "description": "Required emotional atmosphere for this scene"
+              },
+              "lighting_notes": {
+                "type": "string",
+                "description": "Lighting direction if specified in script"
+              },
+              "setups_introduced": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Names of setups introduced in this scene"
+              },
+              "payoffs_delivered": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Names of setups paid off in this scene"
+              },
+              "continuity_rules": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Scene-specific continuity instructions"
+              },
+              "notes_for_shadow": {
+                "type": "string",
+                "description": "Freeform notes the AI should be aware of for this scene"
+              }
+            }
+          },
+          "Prop": {
+            "type": "object",
+            "required": [
+              "name",
+              "canonical_name",
+              "description",
+              "plot_weight",
+              "first_appears_scene",
+              "last_appears_scene"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Human-readable name"
+              },
+              "canonical_name": {
+                "type": "string",
+                "description": "Machine identifier, snake_case, no spaces"
+              },
+              "description": {
+                "type": "string",
+                "description": "What the prop is and its narrative significance"
+              },
+              "plot_weight": {
+                "type": "string",
+                "enum": [
+                  "CRITICAL",
+                  "IMPORTANT",
+                  "INCIDENTAL"
+                ],
+                "description": "CRITICAL = setup/payoff prop or character signature. IMPORTANT = supporting detail. INCIDENTAL = background."
+              },
+              "first_appears_scene": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "last_appears_scene": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "continuity_rules": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Specific rules this prop must follow across all scenes"
+              },
+              "state_vocabulary": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Valid states this prop can be in (e.g., ['folded', 'open', 'burned'] for a letter)"
+              },
+              "default_state": {
+                "type": "string",
+                "description": "Prop's state when first introduced"
+              },
+              "payoff_scene": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "If this is a setup prop, which scene pays it off"
+              },
+              "setup_scene": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "If this is a payoff prop, which scene set it up"
+              },
+              "is_character_signature": {
+                "type": "boolean",
+                "description": "True if this prop defines a character (e.g., father's watch, signature weapon)"
+              },
+              "is_macguffin": {
+                "type": "boolean",
+                "description": "True if this prop drives the plot (e.g., the letter, the briefcase)"
+              }
+            }
+          },
+          "PropReference": {
+            "type": "object",
+            "required": [
+              "prop_name",
+              "scene_state",
+              "rules"
+            ],
+            "properties": {
+              "prop_name": {
+                "type": "string",
+                "description": "Canonical name matching props dict"
+              },
+              "scene_state": {
+                "type": "string",
+                "description": "Expected state of this prop in this specific scene"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Scene-specific rules for this prop"
+              },
+              "alert_on_change": {
+                "type": "boolean",
+                "default": true,
+                "description": "If false, state changes are logged but not alerted (e.g., prop is SUPPOSED to change in this scene)"
+              },
+              "physically_present": {
+                "type": "boolean",
+                "default": true,
+                "description": "True if physically visible; false if only referenced off-screen in dialogue"
+              },
+              "possession": {
+                "type": "object",
+                "description": "Tracks prop transfers between characters within or across scenes",
+                "properties": {
+                  "holder": {
+                    "type": "string"
+                  },
+                  "previous_holder": {
+                    "type": "string"
+                  },
+                  "transfer_frame": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "time_context": {
+                "type": "string",
+                "description": "Time-of-day or temporal dependency for this prop's state in this scene"
+              }
+            }
+          },
+          "Character": {
+            "type": "object",
+            "required": [
+              "name",
+              "canonical_name",
+              "description"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "canonical_name": {
+                "type": "string",
+                "description": "snake_case identifier"
+              },
+              "description": {
+                "type": "string"
+              },
+              "signature_props": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Props always associated with this character"
+              },
+              "emotional_arc_summary": {
+                "type": "string"
+              }
+            }
+          },
+          "Setup": {
+            "type": "object",
+            "required": [
+              "name",
+              "setup_scene",
+              "payoff_scene",
+              "weight",
+              "description"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Canonical name for this setup"
+              },
+              "setup_scene": {
+                "type": "integer"
+              },
+              "payoff_scene": {
+                "type": "integer"
+              },
+              "weight": {
+                "type": "string",
+                "enum": [
+                  "CRITICAL",
+                  "IMPORTANT"
+                ],
+                "description": "How badly does the narrative break if this setup is forgotten?"
+              },
+              "description": {
+                "type": "string",
+                "description": "What is established and what must be paid off"
+              },
+              "props_involved": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Props that must maintain continuity for this setup to work"
+              }
+            }
+          },
+          "EmotionalBeat": {
+            "type": "object",
+            "required": [
+              "scene",
+              "emotion",
+              "intensity"
+            ],
+            "properties": {
+              "scene": {
+                "type": "integer"
+              },
+              "emotion": {
+                "type": "string",
+                "description": "Primary emotion (e.g., suspicious, desperate, resigned)"
+              },
+              "intensity": {
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "description": "Strength 0.0-1.0"
+              },
+              "context": {
+                "type": "string",
+                "description": "Brief narrative context for this beat"
+              }
+            }
+          }
+        }
+      },
+      "Scene": {
+        "type": "object",
+        "required": [
+          "number",
+          "title",
+          "setting",
+          "characters_present",
+          "plot_weight",
+          "critical_props",
+          "incidental_props"
+        ],
+        "properties": {
+          "number": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "title": {
+            "type": "string",
+            "description": "Scene heading or short descriptor"
+          },
+          "setting": {
+            "type": "string",
+            "description": "INT./EXT. location, time of day"
+          },
+          "characters_present": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Characters physically present in this scene"
+          },
+          "plot_weight": {
+            "type": "string",
+            "enum": [
+              "CRITICAL",
+              "IMPORTANT",
+              "TRANSITIONAL",
+              "INCIDENTAL"
+            ],
+            "description": "How much this scene matters to the overall narrative"
+          },
+          "critical_props": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PropReference"
+            },
+            "description": "Props that MUST maintain continuity. Setup/payoff props, character-defining items, plot MacGuffins."
+          },
+          "incidental_props": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PropReference"
+            },
+            "description": "Background props with NO continuity requirement. Coffee cups, background furniture, etc."
+          },
+          "emotional_tone": {
+            "type": "string",
+            "description": "Required emotional atmosphere for this scene"
+          },
+          "lighting_notes": {
+            "type": "string",
+            "description": "Lighting direction if specified in script"
+          },
+          "setups_introduced": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Names of setups introduced in this scene"
+          },
+          "payoffs_delivered": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Names of setups paid off in this scene"
+          },
+          "continuity_rules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Scene-specific continuity instructions"
+          },
+          "notes_for_shadow": {
+            "type": "string",
+            "description": "Freeform notes the AI should be aware of for this scene"
+          }
+        }
+      },
+      "Prop": {
+        "type": "object",
+        "required": [
+          "name",
+          "canonical_name",
+          "description",
+          "plot_weight",
+          "first_appears_scene",
+          "last_appears_scene"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Human-readable name"
+          },
+          "canonical_name": {
+            "type": "string",
+            "description": "Machine identifier, snake_case, no spaces"
+          },
+          "description": {
+            "type": "string",
+            "description": "What the prop is and its narrative significance"
+          },
+          "plot_weight": {
+            "type": "string",
+            "enum": [
+              "CRITICAL",
+              "IMPORTANT",
+              "INCIDENTAL"
+            ],
+            "description": "CRITICAL = setup/payoff prop or character signature. IMPORTANT = supporting detail. INCIDENTAL = background."
+          },
+          "first_appears_scene": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "last_appears_scene": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "continuity_rules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Specific rules this prop must follow across all scenes"
+          },
+          "state_vocabulary": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Valid states this prop can be in (e.g., ['folded', 'open', 'burned'] for a letter)"
+          },
+          "default_state": {
+            "type": "string",
+            "description": "Prop's state when first introduced"
+          },
+          "payoff_scene": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "If this is a setup prop, which scene pays it off"
+          },
+          "setup_scene": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "If this is a payoff prop, which scene set it up"
+          },
+          "is_character_signature": {
+            "type": "boolean",
+            "description": "True if this prop defines a character (e.g., father's watch, signature weapon)"
+          },
+          "is_macguffin": {
+            "type": "boolean",
+            "description": "True if this prop drives the plot (e.g., the letter, the briefcase)"
+          }
+        }
+      },
+      "PropReference": {
+        "type": "object",
+        "required": [
+          "prop_name",
+          "scene_state",
+          "rules"
+        ],
+        "properties": {
+          "prop_name": {
+            "type": "string",
+            "description": "Canonical name matching props dict"
+          },
+          "scene_state": {
+            "type": "string",
+            "description": "Expected state of this prop in this specific scene"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Scene-specific rules for this prop"
+          },
+          "alert_on_change": {
+            "type": "boolean",
+            "default": true,
+            "description": "If false, state changes are logged but not alerted (e.g., prop is SUPPOSED to change in this scene)"
+          },
+          "physically_present": {
+            "type": "boolean",
+            "default": true,
+            "description": "True if physically visible; false if only referenced off-screen in dialogue"
+          },
+          "possession": {
+            "type": "object",
+            "description": "Tracks prop transfers between characters within or across scenes",
+            "properties": {
+              "holder": {
+                "type": "string"
+              },
+              "previous_holder": {
+                "type": "string"
+              },
+              "transfer_frame": {
+                "type": "integer"
+              }
+            }
+          },
+          "time_context": {
+            "type": "string",
+            "description": "Time-of-day or temporal dependency for this prop's state in this scene"
+          }
+        }
+      },
+      "Character": {
+        "type": "object",
+        "required": [
+          "name",
+          "canonical_name",
+          "description"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "canonical_name": {
+            "type": "string",
+            "description": "snake_case identifier"
+          },
+          "description": {
+            "type": "string"
+          },
+          "signature_props": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Props always associated with this character"
+          },
+          "emotional_arc_summary": {
+            "type": "string"
+          }
+        }
+      },
+      "Setup": {
+        "type": "object",
+        "required": [
+          "name",
+          "setup_scene",
+          "payoff_scene",
+          "weight",
+          "description"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Canonical name for this setup"
+          },
+          "setup_scene": {
+            "type": "integer"
+          },
+          "payoff_scene": {
+            "type": "integer"
+          },
+          "weight": {
+            "type": "string",
+            "enum": [
+              "CRITICAL",
+              "IMPORTANT"
+            ],
+            "description": "How badly does the narrative break if this setup is forgotten?"
+          },
+          "description": {
+            "type": "string",
+            "description": "What is established and what must be paid off"
+          },
+          "props_involved": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Props that must maintain continuity for this setup to work"
+          }
+        }
+      },
+      "EmotionalBeat": {
+        "type": "object",
+        "required": [
+          "scene",
+          "emotion",
+          "intensity"
+        ],
+        "properties": {
+          "scene": {
+            "type": "integer"
+          },
+          "emotion": {
+            "type": "string",
+            "description": "Primary emotion (e.g., suspicious, desperate, resigned)"
+          },
+          "intensity": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Strength 0.0-1.0"
+          },
+          "context": {
+            "type": "string",
+            "description": "Brief narrative context for this beat"
+          }
+        }
+      }
+    }
+  }
+}

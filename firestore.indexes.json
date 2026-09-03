@@ -1,0 +1,27 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "takes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "scene", "order": "ASCENDING"},
+        {"fieldPath": "uploaded_at", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "alerts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "severity", "order": "DESCENDING"},
+        {"fieldPath": "timestamp", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "chat_history",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "timestamp", "order": "DESCENDING"}
+      ]
+    }
+  ]
+}

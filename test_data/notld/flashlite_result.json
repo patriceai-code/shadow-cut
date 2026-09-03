@@ -1,0 +1,41 @@
+{
+  "take_id": "farmhouse_scene",
+  "verdicts": [
+    {
+      "prop": "picture_frame",
+      "frame": 1798,
+      "timestamp": 59.99,
+      "verdict": "false_alarm",
+      "confidence": 0.85,
+      "severity": "info",
+      "explanation": "Minor camera angle or tracking shift at the end of the take; the picture frame on the wall remains securely mounted."
+    },
+    {
+      "prop": "person",
+      "frame": 1798,
+      "timestamp": 59.99,
+      "verdict": "false_alarm",
+      "confidence": 0.9,
+      "severity": "info",
+      "explanation": "Actor movement is natural and continuous as part of the blocking."
+    },
+    {
+      "prop": "shoes",
+      "frame": 1798,
+      "timestamp": 59.99,
+      "verdict": "false_alarm",
+      "confidence": 0.9,
+      "severity": "info",
+      "explanation": "Shoes remain on character's feet as required by continuity rules."
+    }
+  ],
+  "missed_issues": [],
+  "performance_notes": [
+    "Actor effectively conveys high tension and desperation while struggling with furniture and describing the chaotic truck incident."
+  ],
+  "needs_escalation": false,
+  "escalation_reason": null,
+  "processing_time_ms": 0,
+  "tokens_used": 0,
+  "cost_usd": 0.002
+}

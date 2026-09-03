@@ -1,0 +1,70 @@
+{
+  "production_title": "Night of the Living Dead (1968)",
+  "scenes": {
+    "farmhouse_interior": {
+      "number": 1,
+      "title": "Farmhouse Interior - Boarding Up",
+      "characters_present": ["Ben", "Barbra", "Harry", "Helen", "Tom", "Judy"],
+      "emotional_tone": "desperate, tense, chaotic",
+      "lighting_notes": "harsh, shadowy, practical lighting only",
+      "critical_props": [
+        {
+          "prop_name": "wooden_plank",
+          "scene_state": "nailed_to_door",
+          "rules": ["Must remain securing the door", "No production markings visible"],
+          "alert_on_change": true
+        },
+        {
+          "prop_name": "rifle",
+          "scene_state": "in_hand",
+          "rules": ["Must remain with Ben unless transferred"],
+          "alert_on_change": true
+        },
+        {
+          "prop_name": "shoes",
+          "scene_state": "on_feet",
+          "rules": ["Must remain on characters' feet"],
+          "alert_on_change": true
+        }
+      ],
+      "incidental_props": [
+        {"prop_name": "tissue_box", "scene_state": "on_floor", "alert_on_change": false},
+        {"prop_name": "picture_frame", "scene_state": "on_mantel", "alert_on_change": false},
+        {"prop_name": "vase", "scene_state": "on_table", "alert_on_change": false}
+      ],
+      "setups_introduced": ["barricaded farmhouse", "radio news"],
+      "payoffs_delivered": [],
+      "continuity_rules": [
+        "Planks must remain in same orientation between shots",
+        "No production equipment visible",
+        "Props must maintain consistent positions"
+      ]
+    }
+  },
+  "props": {
+    "wooden_plank": {
+      "name": "Wooden Plank",
+      "plot_weight": "CRITICAL",
+      "first_appears_scene": 1,
+      "continuity_rules": ["Must remain securing door", "No production markings"],
+      "state_vocabulary": ["horizontal", "vertical", "diagonal", "nailed", "loose"],
+      "default_state": "horizontal"
+    },
+    "rifle": {
+      "name": "Rifle",
+      "plot_weight": "CRITICAL",
+      "first_appears_scene": 1,
+      "continuity_rules": ["Must remain with Ben unless transferred"],
+      "state_vocabulary": ["in_hand", "leaning", "fired", "reloaded"],
+      "default_state": "in_hand"
+    },
+    "shoes": {
+      "name": "Shoes",
+      "plot_weight": "IMPORTANT",
+      "first_appears_scene": 1,
+      "continuity_rules": ["Must remain on feet"],
+      "state_vocabulary": ["on_feet", "off_feet", "missing"],
+      "default_state": "on_feet"
+    }
+  }
+}

@@ -49,48 +49,41 @@
 
 ## 🔍 PART 2: FORENSIC CONTINUITY EVIDENCE DOSSIER
 
-### 1. 🚨 Critical Alert: RETAKE REQUIRED
-- **Film Timestamp**: `09:41` | **Clip Timestamp**: `09:41`
-- **Category**: Set Construction Prop Flaw
-- **Action Required**: **`RETAKE REQUIRED`**
-- **Confidence Score**: **`99%`** (`0.99`)
-- **Visual Proof**: During the close-up shot of Ben nailing horizontal reinforcement planks across the window/door frame, visible handwritten numbers and carpenter markings are present on the raw lumber facing the camera.
-- **Technical Impact**: Breaches the cinematic fourth wall by revealing set construction materials directly on camera.
-- **Evidence Frame**: [`test_data/notld/evidence_frames/01_retake_plank_markings_0941.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/01_retake_plank_markings_0941.jpg)
-
----
-
-### 2. ⚠️ Warning Alert: DIRECTOR REVIEW REQUIRED
-
-#### Charcoal Lighter Fluid Container Placement
-- **Film Timestamp**: `07:58` | **Clip Timestamp**: `07:58`
+### 1. 🚨 Prop Placement Discontinuity: DIRECTOR REVIEW REQUIRED
+- **Film Timestamp**: `33:01` | **Clip Timestamp**: `07:58` -> `08:15`
 - **Category**: Prop Continuity
 - **Action Required**: **`DIRECTOR REVIEW REQUIRED`**
 - **Confidence Score**: **`95%`** (`0.95`)
-- **Visual Proof**: The rectangular 'Charcoal Lighter' fluid container position shifts slightly across cuts near the fireplace and chair.
-- **Technical Impact**: Spatial discontinuity in prop handling during torch preparation.
-- **Evidence Frame**: [`test_data/notld/evidence_frames/02_review_charcoal_lighter_0758.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/02_review_charcoal_lighter_0758.jpg)
+- **Visual Proof**: The rectangular 'Charcoal Lighter' fluid container is held by Ben in Shot A near the hearth, then abruptly appears resting on the floor beside the chair in the reverse insert Shot B.
+- **Evidence Frame A (07:58)**: [`test_data/notld/evidence_frames/01_prop_lighter_fluid_shotA_0758.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/01_prop_lighter_fluid_shotA_0758.jpg)
+- **Evidence Frame B (08:15)**: [`test_data/notld/evidence_frames/01_prop_lighter_fluid_shotB_0815.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/01_prop_lighter_fluid_shotB_0815.jpg)
 
 ---
 
-### 3. 📋 Minor Alert: LOG ONLY (Natural Lighting Shift)
-
-#### Key-Light Contrast Shift on Harry Cooper
-- **Film Timestamp**: `15:33` | **Clip Timestamp**: `15:33`
-- **Category**: Lighting Continuity
+### 2. 📋 Prop Staging Jump: LOG ONLY (Natural Movement)
+- **Film Timestamp**: `38:25` | **Clip Timestamp**: `13:25` -> `13:35`
+- **Category**: Prop / Actor Staging
 - **Action Required**: **`LOG ONLY`**
-- **Confidence Score**: **`91%`** (`0.91`)
-- **Visual Proof**: Noticeable contrast and shadow intensity shift on Harry Cooper's face between the initial cellar door emergence and subsequent argument cuts.
-- **Technical Impact**: Multi-camera lighting variation common in low-budget black-and-white cinematography.
-- **Evidence Frame**: [`test_data/notld/evidence_frames/03_log_cooper_lighting_1533.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/03_log_cooper_lighting_1533.jpg)
+- **Confidence Score**: **`90%`** (`0.90`)
+- **Visual Proof**: In the medium shot at 13:25, the Winchester repeating rifle rests vertically upright against Ben's right knee. On the immediate reverse cut across Barbra's shoulder at 13:35, the rifle rests horizontally across his lap.
+- **Evidence Frame A (Vertical at 13:25)**: [`test_data/notld/evidence_frames/02_prop_rifle_shotA_vertical_1325.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/02_prop_rifle_shotA_vertical_1325.jpg)
+- **Evidence Frame B (Horizontal at 13:35)**: [`test_data/notld/evidence_frames/02_prop_rifle_shotB_horizontal_1335.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/02_prop_rifle_shotB_horizontal_1335.jpg)
+
+---
+
+### 3. 🚨 Set Construction Barricade: RETAKE REQUIRED
+- **Film Timestamp**: `27:30` | **Clip Timestamp**: `02:30`
+- **Category**: Set Construction Prop Marking
+- **Action Required**: **`RETAKE REQUIRED`**
+- **Confidence Score**: **`99%`** (`0.99`)
+- **Visual Proof**: In the living room wide shot, the barricade lumber nailed diagonally across the front entrance exhibits carpenter placement markings facing the lens.
+- **Evidence Frame**: [`test_data/notld/evidence_frames/03_set_door_barricade_wide_0230.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/03_set_door_barricade_wide_0230.jpg)
 
 ---
 
 ### 4. 📜 Screenplay Deviations (Written vs Performed)
-
-#### Table Dismantling Action
-- **Film Timestamp**: `00:00` | **Clip Timestamp**: `00:00`
+- **Film Timestamp**: `25:00` | **Clip Timestamp**: `00:45`
 - **Scripted**: *"Ben begins wrenching off table legs and planks using an iron tire iron and hammer."*
 - **Filmed Reality**: Ben forcefully rips and kicks the table apart using his bare hands and body weight without any visible tire iron or hammer.
 - **Director Action**: **`ACCEPT RISK`** (Physical struggle reads intensely on camera; minor tool inventory divergence).
-- **Evidence Frame**: [`test_data/notld/evidence_frames/04_script_deviation_table_0045.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/04_script_deviation_table_0045.jpg)
+- **Evidence Frame**: [`test_data/notld/evidence_frames/04_script_deviation_table_bare_hands_0045.jpg`](file:///c:/Users/zache/ShadowCut/test_data/notld/evidence_frames/04_script_deviation_table_bare_hands_0045.jpg)

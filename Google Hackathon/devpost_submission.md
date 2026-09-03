@@ -164,8 +164,8 @@ Shadow Cut uses a **three-tier agentic cascade**:
 ## LINKS
 
 - **GitHub Repository:** https://github.com/patriceai-code/shadow-cut
-- **Cloud Run Live API:** https://shadow-cut-api-713353926846.us-central1.run.app
-- **API Documentation & Health:** https://shadow-cut-api-713353926846.us-central1.run.app/health
+- **Cloud Run Live Application & Console:** https://shadow-cut-api-713353926846.us-central1.run.app
+- **API Health Check & Documentation:** https://shadow-cut-api-713353926846.us-central1.run.app/health
 - **Demo Video:** [YouTube / Loom Link]
 
 ---

@@ -70,7 +70,7 @@ def create_problem_card():
     draw.text((960, 200), "Human script supervisors face impossible multi-camera digital shooting conditions", font=get_font(FONT_REGULAR, 24), fill=(148, 163, 184), anchor="mm")
 
     cards = [
-        ("3-4 CAMERAS SIMULTANEOUS", '"Almost humanly impossible to follow all cameras all the time."\n— Dawn Gilliam (The Hunger Games, Star Wars)', (225, 29, 72)),
+        ("3-4 CAMERAS SIMULTANEOUS", '"With so much more to notate, multitasking is\nstretched to the limit across multi-camera setups."\n— Jayne-Anne Tenggren (Star Wars, 1917), Forbes', (225, 29, 72)),
         ("30:1 to 150:1 RATIOS", "A 2-hour movie produces 25 to 375 hours of raw takes.\nContinuity slips through fatigued human memory.", (245, 158, 11)),
         ("$50,000 - $100,000 RESHOOTS", "When errors are discovered in post-production, pickup\nreshoot days can bankrupt indie and studio budgets.", (239, 68, 68)),
     ]
@@ -84,7 +84,7 @@ def create_problem_card():
 
     # Bottom stat banner
     draw.rounded_rectangle([(120, 760), (1800, 920)], radius=16, fill=(24, 24, 37), outline=(99, 102, 241), width=2)
-    draw.text((960, 810), "ZERO automated computer vision tools exist for on-set production.", font=get_font(FONT_BOLD, 30), fill=(248, 250, 252), anchor="mm")
+    draw.text((960, 810), "Existing tools track scripts & notes. Shadow Cut tracks continuity in live pixels.", font=get_font(FONT_BOLD, 30), fill=(248, 250, 252), anchor="mm")
     draw.text((960, 865), "Shadow Cut bridges this blind spot: from $50,000 reshoots down to $7.00 per movie (7,000x ROI).", font=get_font(FONT_REGULAR, 24), fill=(129, 140, 248), anchor="mm")
 
     img.save(OUTPUT_DIR / "problem_card.png")
@@ -213,7 +213,7 @@ def create_audit_title():
     draw.rounded_rectangle([(160, 550), (1760, 920)], radius=16, fill=(24, 24, 37), outline=(51, 65, 85), width=2)
     draw.text((220, 600), "REAL HISTORICAL CONTINUITY BREAKS DISCOVERED:", font=get_font(FONT_BOLD, 26), fill=(255, 255, 255))
     findings = [
-        ("37:08", "Set Construction: Visible carpenter measurements & 'UPPER RIGHT CORNER' on barricade lumber", "RETAKE REQUIRED (99%)", (239, 68, 68)),
+        ("37:08", "Set Construction: Visible carpenter measurements & 'UPPER RIGHT CORNER' on barricade lumber", "RETAKE REQUIRED (100%)", (239, 68, 68)),
         ("07:58", "Prop Displacement: Charcoal lighter fluid canister jumps from hearth to floor across cuts", "DIRECTOR REVIEW (95%)", (245, 158, 11)),
         ("13:25", "Actor Staging Jump: Winchester repeating rifle shifts from vertical upright to horizontal across lap", "LOG ONLY (90%)", (148, 163, 184)),
         ("00:45", "Script Deviation: Duane Jones rips table apart bare-handed vs scripted iron tire iron & hammer", "ACCEPT RISK (91%)", (16, 185, 129)),

@@ -1,5 +1,8 @@
 # Shadow Cut 🎬
 
+> *"With so much more information to notate, multitasking is stretched to the limit... Multi-camera challenges the balance between data entry and all the other tasks a script supervisor needs to perform."*  
+> — **Jayne-Anne Tenggren**, Hollywood Script Supervisor (*Star Wars*, *James Bond*, *1917*) in ***Forbes***
+> 
 > **The director still directs. The Shadow just remembers.**
 
 [![Hackathon](https://img.shields.io/badge/Agentic%20Cinema-IBM%20Track-054ADA?style=for-the-badge&logo=ibm)](https://agentic-cinema.devpost.com/)
@@ -30,7 +33,7 @@ The complete Shadow Cut backend is deployed live on **Google Cloud Run** in `us-
 ```bash
 # 1. Health Probe
 curl -s https://shadow-cut-api-713353926846.us-central1.run.app/health
-# {"status":"ok","version":"0.1.0"}
+# {"status":"ok","version":"1.0.0","service":"shadow-cut-engine"}
 
 # 2. Retrieve Live Forensic Continuity Alerts (Night of the Living Dead)
 curl -s https://shadow-cut-api-713353926846.us-central1.run.app/api/alerts/latest | jq .
@@ -43,14 +46,15 @@ curl -s -X POST https://shadow-cut-api-713353926846.us-central1.run.app/api/chat
 
 ---
 
-## 🎬 Demo Video & Devpost Submission
+## 🎬 Official Demo Video
 
-> **Official 3-Minute Master Demo Video Ready**:
-> * **Master File (1080p, 60fps):** [`demo_production/shadow_cut_official_demo.mp4`](demo_production/shadow_cut_official_demo.mp4) (Exact Runtime: **`2:53`** — fully within the 3:00 limit)
-> * **[▶ Watch the 3-Minute Demo Video on YouTube](https://youtube.com/watch?v=YOUR_VIDEO_ID)** *(Replace `YOUR_VIDEO_ID` with YouTube unlisted link upon upload, or review the master MP4 directly)*
-> * **[Devpost Submission Narrative](Google%20Hackathon/devpost_submission.md)**
-> * **[IBM Bob Architectural Blueprint](BOB_INTEGRATION.md)**
-> * **[Demo Video Script & Forensic Dossier](Google%20Hackathon/DEMO_VIDEO_EVIDENCE_DOSSIER.md)**
+[![Watch the Shadow Cut Demo](https://img.youtube.com/vi/VtS-Y1A0ICg/maxresdefault.jpg)](https://youtu.be/VtS-Y1A0ICg)
+
+> **[▶ Watch the Official 3-Minute Demonstration on YouTube](https://youtu.be/VtS-Y1A0ICg)** (Runtime: **`2:53`** — 1080p 60fps)  
+> *Experience how Shadow Cut detects on-set continuity breaks, unscripted prop shifts, and set dressing anomalies in real time without disrupting creative flow.*  
+> 
+> * **[IBM Bob Architectural Blueprint](BOB_INTEGRATION.md)** — Deep dive into the 6 MCP tools, data contracts, and watsonx Orchestrate catalog
+> * **[API Interface Contracts](docs/api_contracts.md)** — Core service and inference bridge specifications
 
 ---
 
@@ -78,7 +82,7 @@ Shadow Cut uncovered **four authentic historical continuity breaks and script de
 
 | Timestamp | Category | Reality vs. Script | Confidence | Plot Weight | Director Action |
 |:---|:---|:---|:---:|:---:|:---:|
-| **37:08** (02:30 clip) | **Set Construction** | **Carpenter Handwriting:** Raw pine barricade plank has visible pencil carpentry measurements & *"UPPER RIGHT CORNER"* facing camera. | **99.0%** | **CRITICAL** | `RETAKE REQUIRED` |
+| **37:08** (02:30 clip) | **Set Construction** | **Carpenter Handwriting:** Raw pine barricade plank has visible pencil carpentry measurements & *"UPPER RIGHT CORNER"* facing camera. | **100.0%** | **CRITICAL** | `RETAKE REQUIRED` |
 | **07:58 → 08:15** | **Prop Placement** | **Canister Jump:** Charcoal lighter fluid can on fireplace hearth in Shot A shifts to the floor by the chair in reverse Shot B before anyone touches it. | **95.0%** | **IMPORTANT** | `DIRECTOR REVIEW REQUIRED` |
 | **13:25 → 13:35** | **Actor Staging** | **Rifle Angle:** Winchester repeating rifle propped vertically against doorframe abruptly shifts to horizontal across Ben's lap between cuts. | **90.0%** | **INCIDENTAL** | `LOG ONLY` |
 | **00:45** | **Script Deviation** | **Table Disassembly:** Screenplay specifies Ben uses an iron tire iron & hammer; actor Duane Jones improvises ripping it apart bare-handed. | **91.0%** | **PERFORMANCE** | `ACCEPT RISK` |
@@ -332,9 +336,12 @@ shadow-cut/
 │   ├── plot_graph.json                 # Pre-computed Plot Knowledge Graph
 │   └── evidence_frames/                # Audited historical film frames
 │
-└── Google Hackathon/                   # Hackathon Submission Dossiers
-    ├── DEMO_VIDEO_EVIDENCE_DOSSIER.md  # 3-minute video script & evidence breakdown
-    └── devpost_submission.md           # Locked Devpost submission text
+└── docs/                               # Technical Specifications & Architecture
+    ├── confidence_escalation_logic.md  # Decision matrix & escalation math
+    ├── api_contracts.md                # MCP & Bridge API contracts
+    ├── confluent_schema.md             # Streaming event schemas
+    ├── edge_cases.md                   # 12 continuity edge cases
+    └── images/                         # Production UI captures & architecture
 ```
 
 ---

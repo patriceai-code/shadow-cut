@@ -145,7 +145,7 @@ async def lifespan(app: FastAPI):
     if pipeline_state["consumer"]:
         pipeline_state["consumer"].stop()
 
-app = FastAPI(title="Shadow Cut", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Shadow Cut", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -159,7 +159,7 @@ register_webhook(app, process_take)
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "version": "0.1.0"}
+    return {"status": "ok", "version": "1.0.0", "service": "shadow-cut-engine"}
 
 @app.post("/api/takes/upload", status_code=202)
 async def upload_take(
@@ -334,19 +334,43 @@ async def get_trust_report():
 
 # ─── Production Next.js UI Static Mount ───────────────────────────────────────
 from pathlib import Path
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 _current_dir = Path(__file__).resolve().parent
-_candidates = [
+_ui_candidates = [
     _current_dir.parent.parent / "ui" / "out",
     Path("ui/out"),
     Path("/app/ui/out"),
 ]
-for _candidate in _candidates:
-    if _candidate.exists() and (_candidate / "index.html").exists():
-        app.mount("/", StaticFiles(directory=str(_candidate), html=True), name="static_ui")
-        log.info("Mounted production Next.js UI from %s", _candidate)
+_ui_dir: Path | None = None
+for _c in _ui_candidates:
+    if _c.exists() and (_c / "index.html").exists():
+        _ui_dir = _c
+        log.info("Found production Next.js UI at %s", _c)
         break
+
+if _ui_dir is not None:
+    # Serve _next/ static chunks and other static assets
+    app.mount("/_next", StaticFiles(directory=str(_ui_dir / "_next")), name="next_assets")
+
+    # Explicit root route so bare URL always resolves
+    @app.get("/", include_in_schema=False)
+    async def serve_root():
+        return FileResponse(str(_ui_dir / "index.html"))
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa(full_path: str):
+        """Catch-all: serve matching static file or fall back to index.html."""
+        candidate = _ui_dir / full_path
+        if candidate.is_file():
+            return FileResponse(str(candidate))
+        html_candidate = _ui_dir / f"{full_path}.html"
+        if html_candidate.is_file():
+            return FileResponse(str(html_candidate))
+        return FileResponse(str(_ui_dir / "index.html"))
+else:
+    log.warning("No production UI found — API-only mode")
 
 if __name__ == "__main__":
     import uvicorn

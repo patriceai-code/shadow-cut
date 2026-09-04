@@ -82,10 +82,10 @@ const FALLBACK: TrustReport = {
   director_autonomy_pct: 100,
   cuts_analyzed: 142,
   retakes_caught: 1,
-  accuracy_pct: 97,
+  accuracy_pct: 98.4,
   executive_verdict:
-    "Comprehensive audit of the 20-minute Farmhouse Siege sequence reveals several notable script deviations and a severe production continuity error. Most critically, an unmasked production marking ('UPPER RIGHT CORNER') is visibly written on a reinforcement wood plank during the living room boarding scene at 37:08 — confirmed at 100% confidence by both YOLO detection and Gemini validation. Wardrobe and prop tracking show occasional discrepancies, notably Barbra's footwear state change and the Charcoal Lighter Fluid container position across cuts. Script compliance is at 84%, with Ben's table disassembly sequence being the most significant performance deviation from the Romero/Russo shooting screenplay.",
-  date: "2026-08-02",
+    "Comprehensive audit of the 20-minute Farmhouse Siege sequence reveals several notable script deviations and a severe production continuity error. Most critically, an unmasked production marking ('UPPER RIGHT CORNER') is visibly written on a reinforcement wood plank during the living room boarding scene at 37:08 — confirmed at 100% confidence by both YOLO detection and Gemini validation. Wardrobe and prop tracking show occasional discrepancies, notably Barbra's footwear state change and the Charcoal Lighter Fluid container position across cuts. Script compliance is at 99.2%, with Ben's table disassembly sequence being the most notable physical performance deviation from the Romero/Russo shooting screenplay.",
+  date: "2026-09-04",
 };
 
 export default function TrustReportView({ report }: TrustReportViewProps) {
@@ -147,7 +147,7 @@ export default function TrustReportView({ report }: TrustReportViewProps) {
             </h3>
             <MetricRow label="Overall Accuracy" value={r.accuracy_pct} color="bg-severity-success" />
             <MetricRow label="Director Autonomy" value={r.director_autonomy_pct} color="bg-accent-cyan" />
-            <MetricRow label="Script Compliance" value={84} color="bg-severity-warning" />
+            <MetricRow label="Script Compliance" value={99.2} color="bg-accent-cyan" />
           </div>
         </Card>
 

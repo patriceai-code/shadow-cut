@@ -253,7 +253,7 @@ class FlashLiteError(BaseModel):
 ## INTERFACE 3: Flash-Lite → Pro Escalation (Deep Reasoning Handoff)
 
 **Producer:** `core/bridge.py` (when Flash-Lite returns `needs_escalation: true`)
-**Consumer:** Gemini 2.5/3.1 Pro (via Vertex AI API)
+**Consumer:** Gemini 3.1 Pro Preview (via Vertex AI API)
 **Transport:** HTTP POST to Gemini Pro API
 **Trigger conditions:**
 - Flash-Lite confidence < 0.85 on CRITICAL prop

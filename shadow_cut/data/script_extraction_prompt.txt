@@ -1,6 +1,6 @@
 """
 SHADOW CUT — Plot Knowledge Graph Extraction Prompt
-For: Gemini 2.5 Pro (1M token context)
+For: Gemini 3.1 Pro Preview (1M token context)
 Purpose: One-shot extraction of structured continuity data from a film script
 """
 

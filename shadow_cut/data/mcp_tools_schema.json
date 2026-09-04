@@ -30,7 +30,7 @@
                 "properties": {
                   "script_text": {
                     "type": "string",
-                    "description": "Full script text. Supports Fountain format, plain text, or extracted PDF text. 1M token max (Gemini 2.5 Pro context)."
+                    "description": "Full script text. Supports Fountain format, plain text, or extracted PDF text. 1M token max (Gemini 3.1 Pro Preview context)."
                   },
                   "production_title": {
                     "type": "string",

@@ -57,7 +57,7 @@ shadow_cut/mcp_servers/
 * **Return Schema**: `PlotKnowledgeGraph`, `SceneDefinition`, `PropDefinition`.
 
 #### 2. `analyze_take.py` (Vision & Object Localization)
-* **Purpose**: Coordinates Tier 1 (YOLO-World) and Tier 2 (Gemini 2.5 Flash Lite) frame analysis.
+* **Purpose**: Coordinates Tier 1 (YOLO-World) and Tier 2 (Gemini 3.5 Flash-Lite) frame analysis.
 * **Core Functions**:
   * Ingests high-resolution keyframes from the on-set capture rig.
   * Emits normalized bounding boxes $[y_{\min}, x_{\min}, y_{\max}, x_{\max}]$ with class confidences.
@@ -180,7 +180,7 @@ flowchart LR
     A[IBM watsonx Orchestrate] -->|Discover Skills| B[shadow_cut_orchestrate.yaml]
     B -->|Binds Tools| C[Shadow Cut FastAPI / MCP Engine]
     C -->|Tool Call: analyze_take| D[Tier 1: YOLO-World]
-    C -->|Tool Call: check_continuity| E[Tier 2: Gemini 2.5 Flash Lite]
+    C -->|Tool Call: check_continuity| E[Tier 2: Gemini 3.5 Flash-Lite]
     C -->|Tool Call: arbitrate_alert| F[Tier 3: Gemini 3.1 Pro Preview]
     C -->|Dispatch| G[Director Tablet / iPad]
 ```

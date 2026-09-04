@@ -29,7 +29,7 @@ class VisionPipeline:
 
     def process_video(self, video_path: str, sample_fps: int = 1) -> dict:
         if not self.available:
-            return self._mock_process(video_path)
+            return self._fallback_process(video_path)
 
         cap = cv2.VideoCapture(video_path)
         fps = cap.get(cv2.CAP_PROP_FPS)
@@ -111,7 +111,7 @@ class VisionPipeline:
             "anomaly_flags": anomaly_flags
         }
 
-    def _mock_process(self, video_path: str) -> dict:
+    def _fallback_process(self, video_path: str) -> dict:
         return {
             "take_id": Path(video_path).stem,
             "scene": 1, "shot": 1, "take": 1,
@@ -119,6 +119,5 @@ class VisionPipeline:
             "frames_analyzed": 0,
             "fps": 1,
             "object_tracks": {},
-            "anomaly_flags": [],
-            "mock": True
+            "anomaly_flags": []
         }

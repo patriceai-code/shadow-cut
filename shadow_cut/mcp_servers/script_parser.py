@@ -1,6 +1,6 @@
 """
 Shadow Cut MCP Server — Tool 1: parse_script
-Calls Gemini 2.5 Pro to extract a PlotKnowledgeGraph from a film script.
+Calls Gemini 3.1 Pro Preview to extract a PlotKnowledgeGraph from a film script.
 """
 from __future__ import annotations
 
@@ -121,7 +121,7 @@ def parse_script(
     """
     Parse a film script into a structured Plot Knowledge Graph.
 
-    Sends the full script text to Gemini 2.5 Pro with the Shadow Cut extraction
+    Sends the full script text to Gemini 3.1 Pro Preview with the Shadow Cut extraction
     prompt and validates the response against the PlotKnowledgeGraph schema.
 
     Args:

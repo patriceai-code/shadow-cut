@@ -454,7 +454,7 @@ paths:
       operationId: parse_script
       summary: Parse a film script into a Plot Knowledge Graph
       description: |
-        Sends the full script text to Gemini 2.5 Pro with the Shadow Cut extraction
+        Sends the full script text to Gemini 3.1 Pro Preview with the Shadow Cut extraction
         prompt. Validates the response against PlotKnowledgeGraph and returns all
         scenes, props, emotional arcs, and setup/payoff links.
       x-ibm-nl-intent: "Parse or analyse a film script"
@@ -720,7 +720,7 @@ x-ibm-application:
   skills:
     - operationId: parse_script
       displayName: Parse Film Script
-      description: Extract Plot Knowledge Graph from a film script using Gemini 2.5 Pro.
+      description: Extract Plot Knowledge Graph from a film script using Gemini 3.1 Pro Preview.
       categories: [script-analysis]
 
     - operationId: analyze_take
